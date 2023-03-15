@@ -1,4 +1,4 @@
-package com.example.testapp.models
+package com.example.movieApp.models
 
 data class Movie(
     val id: String,
@@ -10,6 +10,17 @@ data class Movie(
     val plot: String,
     val images: List<String>,
     val rating: String)
+
+fun getMovie(movieID: String): Movie {
+    val movies = getMovies()
+
+    for(m: Movie in movies) {
+        if (m.id == movieID)
+            return m;
+    }
+
+    return movies[0]
+}
 
 fun getMovies(): List<Movie> {
     return listOf(

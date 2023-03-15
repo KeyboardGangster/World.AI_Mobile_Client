@@ -22,23 +22,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.movieApp.navigation.MainNavigation
 import com.example.movieApp.ui.theme.Lab2Theme
-import com.example.testapp.models.Movie
-import com.example.testapp.models.getMovies
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             Lab2Theme {
-                // A surface container using the 'background' color from the theme
-                Surface {
-                    Column {
-                        TopAppBar()
-                        MovieList(getMovies())
-                    }
-                }
+                MainNavigation()
             }
         }
     }
@@ -47,132 +42,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Greeting(name: String) {
     Text(text = "Hello $name!")
-}
-
-@Composable
-fun MovieList(movies: List<Movie>) {
-    Column {
-        LazyColumn {
-            items(movies) {movie ->
-                MovieRow(movie)
-            }
-        }
-    }
-}
-
-@Composable
-fun MovieRow(movie: Movie) {
-    var expandInfo by remember {
-        mutableStateOf(false)
-    }
-
-    Column (modifier = Modifier
-        .clip(RoundedCornerShape(Dp(20f))),
-        verticalArrangement = Arrangement.Top,
-    ) {
-        Box (modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp)) {
-            Image(
-                modifier = Modifier.fillMaxWidth(),
-                painter = LoadImage(movie),
-                contentDescription = null,
-                contentScale = ContentScale.FillWidth,
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                Icon(
-                    imageVector = Icons.Default.FavoriteBorder,
-                    contentDescription = "",
-                    Modifier.padding(
-                        PaddingValues(Dp(10f))
-                    )
-                )
-            }
-        }
-        Row (
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = Dp(5f)),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(
-                text = movie.title,
-                fontWeight = FontWeight.Bold)
-
-            IconButton(onClick = {
-                expandInfo = !expandInfo
-            }) {
-                Icon(
-                    imageVector = if (expandInfo) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
-                    contentDescription = ""
-                )
-            }
-        }
-
-        AnimatedVisibility(visible = expandInfo) {
-            ShowMovieContents(movie = movie)
-        }
-        
-        /*if (expandInfo)
-            ShowMovieContents(movie = movie)
-        else
-            Box {}*/
-    }
-}
-
-@Composable
-fun LoadImage(movie: Movie): Painter {
-    return rememberAsyncImagePainter(movie.images[0])
-}
-
-@Composable
-fun ShowMovieContents(movie: Movie) {
-    Column {
-        Text(text = "Director: " + movie.director)
-        Text(text = "Released: " + movie.year)
-        Text(text = "Genre: " + movie.genre)
-        Text(text = "Actors: " + movie.actors)
-        Text(text = "Rating: " + movie.rating)
-        Divider(color = Color.LightGray, thickness = 1.dp)
-        Spacer(modifier = Modifier.size(15.dp))
-        Text(text = "Plot: " + movie.plot)
-    }
-}
-
-@Composable
-fun TopAppBar(){
-    var expand by remember {
-        mutableStateOf(false)
-    }
-
-    TopAppBar(
-        elevation = 4.dp,
-        title = {
-            Text("Movies")
-        },
-        backgroundColor = MaterialTheme.colors.primarySurface,
-        actions = {
-            IconButton(onClick = { expand = !expand }) {
-                Icon(Icons.Filled.MoreVert, null)
-            }
-            DropdownMenu(
-                expanded = expand,
-                onDismissRequest = {
-                    expand = false
-                }
-            ) {
-                DropdownMenuItem(onClick = { expand = false }) {
-                    Row {
-                        Icon(Icons.Filled.Favorite, null)
-                        Text("Favorites")
-                    }
-                }
-            }
-        })
 }
 
 @Preview(showBackground = true)
