@@ -21,50 +21,17 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.movieApp.models.Movie
 import com.example.movieApp.models.getMovie
+import com.example.movieApp.widgets.MovieRow
+import com.example.movieApp.widgets.ShowImages
+import com.example.movieApp.widgets.SimpleAppBar
 
 @Composable
 fun DetailScreen(navController: NavController, movieID: String) {
     val movie: Movie = getMovie(movieID)
 
     Column {
-        TopBarDetail(navController, movie)
-        MovieRow(movie = movie) {
-
-        }
-        ShowMovieImages(urls = movie.images)
-    }
-}
-
-@Composable
-fun TopBarDetail(navController: NavController, movie: Movie) {
-    TopAppBar(elevation = 4.dp, title = {
-        Text(movie.title)
-    }, backgroundColor = MaterialTheme.colors.primarySurface, navigationIcon = {
-        IconButton(onClick = { navController.popBackStack() }) {
-            Icon(Icons.Filled.KeyboardArrowLeft, "backIcon")
-        }
-    })
-}
-
-@Composable
-fun ShowMovieImages(urls: List<String>) {
-    Column {
-        Text("Movie Images", textAlign = TextAlign.Center, fontSize = 30.sp, modifier = Modifier.fillMaxWidth())
-        LazyRow {items(urls) { url ->
-            ShowImage(url)
-            }
-        }   
-    }
-}
-
-@Composable
-fun ShowImage(url: String) {
-    Card(modifier = Modifier
-        .fillMaxWidth()
-        .padding(5.dp),
-        shape = RoundedCornerShape(corner = CornerSize(5.dp)),
-        elevation = 5.dp,
-    ) {
-        AsyncImage(model = url, contentDescription = null)
+        SimpleAppBar(title = movie.title, navController = navController)
+        MovieRow(movie = movie) { }
+        ShowImages(urls = movie.images)
     }
 }

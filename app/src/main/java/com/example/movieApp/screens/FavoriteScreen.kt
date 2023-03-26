@@ -11,6 +11,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.movieApp.models.Movie
 import com.example.movieApp.models.getMovies
+import com.example.movieApp.widgets.MovieList
+import com.example.movieApp.widgets.MovieRow
+import com.example.movieApp.widgets.SimpleAppBar
 
 @Composable
 fun FavoriteScreen(navController: NavController) {
@@ -18,30 +21,7 @@ fun FavoriteScreen(navController: NavController) {
     val someMovies = listOf(movies[2], movies[3], movies[4])
 
     Column {
-        TopBarFavorite(navController)
-        MovieRowFaves(movies = someMovies)
+        SimpleAppBar(title = "Favorites", navController = navController)
+        MovieList(movies = someMovies) { }
     }
-}
-
-@Composable
-fun MovieRowFaves(movies: List<Movie>) {
-    Column {
-        LazyColumn {
-            items(movies) { movie ->
-                MovieRow(movie) {
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun TopBarFavorite(navController: NavController) {
-    TopAppBar(elevation = 4.dp, title = {
-        Text("Favorites")
-    }, backgroundColor = MaterialTheme.colors.primarySurface, navigationIcon = {
-        IconButton(onClick = { navController.popBackStack() }) {
-            Icon(Icons.Filled.KeyboardArrowLeft, "backIcon")
-        }
-    })
 }
