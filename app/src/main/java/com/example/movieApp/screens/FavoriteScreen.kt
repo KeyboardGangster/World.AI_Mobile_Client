@@ -11,17 +11,18 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.movieApp.models.Movie
 import com.example.movieApp.models.getMovies
+import com.example.movieApp.navigation.Screen
+import com.example.movieApp.viewmodel.MainViewModel
 import com.example.movieApp.widgets.MovieList
 import com.example.movieApp.widgets.MovieRow
 import com.example.movieApp.widgets.SimpleAppBar
 
 @Composable
-fun FavoriteScreen(navController: NavController) {
-    val movies = getMovies()
-    val someMovies = listOf(movies[2], movies[3], movies[4])
-
+fun FavoriteScreen(navController: NavController, mainViewModel: MainViewModel) {
     Column {
         SimpleAppBar(title = "Favorites", navController = navController)
-        MovieList(movies = someMovies) { }
+        MovieList(movies = mainViewModel.faveMovieIDs,
+            onItemClick = { navController.navigate(Screen.Detail.passId(it)) },
+            onFavClick = { mainViewModel.toggleFave(it) })
     }
 }

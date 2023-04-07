@@ -10,4 +10,6 @@ sealed class Screen(val route: String) {
         }
     }
     object Favorite: Screen(route = "favorite")
+
+    object AddMovie: Screen(route = "addMovie")
 }

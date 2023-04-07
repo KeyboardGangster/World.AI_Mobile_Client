@@ -3,6 +3,7 @@ package com.example.movieApp.widgets
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.MoreVert
@@ -44,6 +45,15 @@ fun MainAppBar(title: String, navController: NavController) {
                 Row {
                     Icon(Icons.Filled.Favorite, null)
                     Text("Favorites")
+                }
+            }
+            DropdownMenuItem(onClick = {
+                expand = false
+                navController.navigate(Screen.AddMovie.route)
+            }) {
+                Row {
+                    Icon(Icons.Filled.Add, null)
+                    Text("Add movie")
                 }
             }
         }

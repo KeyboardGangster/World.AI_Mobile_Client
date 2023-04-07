@@ -28,11 +28,12 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.movieApp.models.Movie
 import com.example.movieApp.models.getMovies
 import com.example.movieApp.navigation.Screen
+import com.example.movieApp.viewmodel.MainViewModel
 import com.example.movieApp.widgets.MainAppBar
 import com.example.movieApp.widgets.MovieList
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavController, mainViewModel: MainViewModel) {
     // A surface container using the 'background' color from the theme
     Surface(
         modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background
@@ -40,9 +41,14 @@ fun HomeScreen(navController: NavController) {
         Surface {
             Column {
                 MainAppBar(title = "Movies", navController = navController)
-                MovieList(getMovies()) { movieID ->
-                    navController.navigate(Screen.Detail.passId(movieID))
-                }
+                MovieList(
+                    mainViewModel.movieList,
+                    onItemClick = {
+                        navController.navigate(Screen.Detail.passId(it))
+                    },
+                    onFavClick = {
+                        mainViewModel.toggleFave(it)
+                    })
             }
         }
     }

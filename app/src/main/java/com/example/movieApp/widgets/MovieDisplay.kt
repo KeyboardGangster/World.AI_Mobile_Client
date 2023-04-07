@@ -29,34 +29,38 @@ import com.example.movieApp.models.Movie
 
 
 @Composable
-fun MovieList(movies: List<Movie>, onItemClick: (String) -> Unit) {
+fun MovieList(movies: List<Movie>, onItemClick: (String) -> Unit, onFavClick: (String) -> Unit) {
     LazyColumn {
         items(movies) { movie ->
-            MovieRow(movie, onItemClick)
+            MovieRow(
+                movie,
+                onItemClick = { onItemClick.invoke(movie.id) },
+                onFavClick = { onFavClick.invoke(movie.id) })
         }
     }
 }
 
 @Composable
-fun MovieRow(movie: Movie, onItemClick: (String) -> Unit) {
+fun MovieRow(movie: Movie, onItemClick: () -> Unit, onFavClick: () -> Unit) {
     Column(
         modifier = Modifier.clip(RoundedCornerShape(Dp(20f))),
         verticalArrangement = Arrangement.Top,
     ) {
-        MovieHeader(movie, onItemClick)
+        MovieHeader(movie, onItemClick, onFavClick)
         MovieBody(movie)
     }
 }
 
 @Composable
-fun MovieHeader(movie: Movie, onItemClick: (String) -> Unit) {
+fun MovieHeader(movie: Movie, onItemClick: () -> Unit, onFavClick: () -> Unit) {
     ShowImage(
         modifier = Modifier
-        .fillMaxWidth()
-        .height(200.dp)
-        .clickable { onItemClick.invoke(movie.id) },
+            .fillMaxWidth()
+            .height(200.dp)
+            .clickable(onClick = onItemClick),
         url = movie.images[0],
-        faveIcon = true)
+        movie.isFavorite,
+        onFavClick)
 }
 
 @Composable
@@ -98,7 +102,7 @@ fun MovieContents(movie: Movie) {
     Column {
         Text(text = "Director: " + movie.director)
         Text(text = "Released: " + movie.year)
-        Text(text = "Genre: " + movie.genre)
+        Text(text = "Genre: " + movie.genre.toString().removePrefix("[").removeSuffix("]"))
         Text(text = "Actors: " + movie.actors)
         Text(text = "Rating: " + movie.rating)
         Divider(color = Color.LightGray, thickness = 1.dp)
