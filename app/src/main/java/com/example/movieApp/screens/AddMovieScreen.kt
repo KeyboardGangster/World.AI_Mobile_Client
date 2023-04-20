@@ -8,13 +8,16 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.movieApp.models.Genre
 import com.example.movieApp.models.ListItemSelectable
 import com.example.movieApp.widgets.SimpleAppBar
 import com.example.movieApp.models.Movie
 import com.example.movieApp.models.getMovies
+import com.example.movieApp.utils.InjectorUtils
 import com.example.movieApp.viewmodel.AddMovieScreenViewModel
 import com.example.movieApp.widgets.SelectInput
 import com.example.movieApp.widgets.TextInput
@@ -22,7 +25,9 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 @Composable
-fun AddMovieScreen(navController: NavController, viewModel: AddMovieScreenViewModel) {
+fun AddMovieScreen(navController: NavController) {
+    val viewModel: AddMovieScreenViewModel = viewModel(
+        factory = InjectorUtils.provideAddMovieScreenViewModelFactory(LocalContext.current))
     val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
 

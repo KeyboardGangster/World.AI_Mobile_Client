@@ -17,21 +17,16 @@ import com.example.movieApp.viewmodel.HomeScreenViewModel
 
 @Composable
 fun MainNavigation() {
-    val homeScreenViewModel: HomeScreenViewModel = viewModel(
-        factory = InjectorUtils.provideHomeScreenViewModelFactory(LocalContext.current))
+    //This is here so the viewModel can cache all the movies before opening detail-screen
     val detailScreenViewModel: DetailScreenViewModel = viewModel(
         factory = InjectorUtils.provideDetailScreenViewModelFactory(LocalContext.current))
-    val favoriteScreenViewModel: FavoriteScreenViewModel = viewModel(
-        factory = InjectorUtils.provideFavoriteScreenViewModelFactory(LocalContext.current))
-    val addMovieScreenViewModel: AddMovieScreenViewModel = viewModel(
-        factory = InjectorUtils.provideAddMovieScreenViewModelFactory(LocalContext.current))
 
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.Home.route) {
         composable(
             route = Screen.Home.route
         ) {
-            HomeScreen(navController = navController, viewModel = homeScreenViewModel)
+            HomeScreen(navController = navController)
         }
         composable(
             route = Screen.Detail.route,
@@ -47,12 +42,12 @@ fun MainNavigation() {
         composable(
             route = Screen.Favorite.route
         ) {
-            FavoriteScreen(navController = navController, viewModel = favoriteScreenViewModel)
+            FavoriteScreen(navController = navController)
         }
         composable(
             route = Screen.AddMovie.route
         ) {
-            AddMovieScreen(navController = navController, viewModel = addMovieScreenViewModel)
+            AddMovieScreen(navController = navController)
         }
     }
 }

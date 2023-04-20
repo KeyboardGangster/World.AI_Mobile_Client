@@ -8,8 +8,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.movieApp.navigation.Screen
+import com.example.movieApp.utils.InjectorUtils
 import com.example.movieApp.viewmodel.FavoriteScreenViewModel
 import com.example.movieApp.viewmodel.HomeScreenViewModel
 import com.example.movieApp.widgets.MovieList
@@ -17,7 +20,9 @@ import com.example.movieApp.widgets.SimpleAppBar
 import kotlinx.coroutines.launch
 
 @Composable
-fun FavoriteScreen(navController: NavController, viewModel: FavoriteScreenViewModel) {
+fun FavoriteScreen(navController: NavController) {
+    val viewModel: FavoriteScreenViewModel = viewModel(
+        factory = InjectorUtils.provideFavoriteScreenViewModelFactory(LocalContext.current))
     val faveMoviesState = viewModel.faveMovieList.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
