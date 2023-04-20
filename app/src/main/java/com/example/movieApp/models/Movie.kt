@@ -2,9 +2,13 @@ package com.example.movieApp.models
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
 
+@Entity
 data class Movie(
-    val id: String,
+    @PrimaryKey val id: String,
     val title: String,
     val year: String,
     val genre: List<Genre>,
@@ -13,18 +17,8 @@ data class Movie(
     val plot: String,
     val images: List<String>,
     val rating: Float,
-    var isFavorite: MutableState<Boolean> = mutableStateOf(false))
-
-fun getMovie(movieID: String): Movie {
-    val movies = getMovies()
-
-    for(m: Movie in movies) {
-        if (m.id == movieID)
-            return m;
-    }
-
-    return movies[0]
-}
+    //var isFavorite: MutableState<Boolean> = mutableStateOf(false))
+    var isFavorite: Boolean = false)
 
 fun getMovies(): List<Movie> {
     return listOf(

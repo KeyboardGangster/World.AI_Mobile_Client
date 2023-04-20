@@ -29,11 +29,12 @@ import com.example.movieApp.models.Movie
 
 
 @Composable
-fun MovieList(movies: List<Movie>, onItemClick: (String) -> Unit, onFavClick: (String) -> Unit) {
+fun MovieList(movies: List<Movie>, favForceUpdate: Boolean, onItemClick: (String) -> Unit, onFavClick: (String) -> Unit) {
     LazyColumn {
         items(movies) { movie ->
             MovieRow(
-                movie,
+                movie = movie,
+                favForceUpdate = favForceUpdate,
                 onItemClick = { onItemClick.invoke(movie.id) },
                 onFavClick = { onFavClick.invoke(movie.id) })
         }
@@ -41,26 +42,27 @@ fun MovieList(movies: List<Movie>, onItemClick: (String) -> Unit, onFavClick: (S
 }
 
 @Composable
-fun MovieRow(movie: Movie, onItemClick: () -> Unit, onFavClick: () -> Unit) {
+fun MovieRow(movie: Movie, favForceUpdate: Boolean, onItemClick: () -> Unit, onFavClick: () -> Unit) {
     Column(
         modifier = Modifier.clip(RoundedCornerShape(Dp(20f))),
         verticalArrangement = Arrangement.Top,
     ) {
-        MovieHeader(movie, onItemClick, onFavClick)
+        MovieHeader(movie, favForceUpdate, onItemClick, onFavClick)
         MovieBody(movie)
     }
 }
 
 @Composable
-fun MovieHeader(movie: Movie, onItemClick: () -> Unit, onFavClick: () -> Unit) {
+fun MovieHeader(movie: Movie, favForceUpdate: Boolean, onItemClick: () -> Unit, onFavClick: () -> Unit) {
     ShowImage(
         modifier = Modifier
             .fillMaxWidth()
             .height(200.dp)
             .clickable(onClick = onItemClick),
         url = movie.images[0],
-        movie.isFavorite,
-        onFavClick)
+        isFav = movie.isFavorite,
+        favForceUpdate = favForceUpdate,
+        favOnClick = onFavClick)
 }
 
 @Composable

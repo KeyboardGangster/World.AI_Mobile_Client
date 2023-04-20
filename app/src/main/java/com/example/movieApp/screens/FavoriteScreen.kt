@@ -1,28 +1,43 @@
 package com.example.movieApp.screens
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
-import com.example.movieApp.models.Movie
-import com.example.movieApp.models.getMovies
 import com.example.movieApp.navigation.Screen
-import com.example.movieApp.viewmodel.MainViewModel
+import com.example.movieApp.viewmodel.FavoriteScreenViewModel
+import com.example.movieApp.viewmodel.HomeScreenViewModel
 import com.example.movieApp.widgets.MovieList
-import com.example.movieApp.widgets.MovieRow
 import com.example.movieApp.widgets.SimpleAppBar
+import kotlinx.coroutines.launch
 
 @Composable
-fun FavoriteScreen(navController: NavController, mainViewModel: MainViewModel) {
+fun FavoriteScreen(navController: NavController, viewModel: FavoriteScreenViewModel) {
+    val faveMoviesState = viewModel.faveMovieList.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
+
+    var forceRecomposeHack: Boolean by remember {
+        mutableStateOf(false)
+    }
+
     Column {
         SimpleAppBar(title = "Favorites", navController = navController)
-        MovieList(movies = mainViewModel.faveMovieIDs,
-            onItemClick = { navController.navigate(Screen.Detail.passId(it)) },
-            onFavClick = { mainViewModel.toggleFave(it) })
+        MovieList(
+            movies = faveMoviesState.value,
+            favForceUpdate = false,
+            onItemClick = {
+                navController.navigate(Screen.Detail.passId(it))
+            },
+            onFavClick = {
+                coroutineScope.launch {
+                    viewModel.toggleFave(it)
+                    forceRecomposeHack = !forceRecomposeHack
+                }
+            })
     }
 }

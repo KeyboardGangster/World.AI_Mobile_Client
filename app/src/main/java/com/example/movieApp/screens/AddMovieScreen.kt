@@ -1,9 +1,6 @@
 package com.example.movieApp.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
@@ -11,25 +8,23 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.movieApp.models.Genre
 import com.example.movieApp.models.ListItemSelectable
 import com.example.movieApp.widgets.SimpleAppBar
-import com.example.movieApp.R
 import com.example.movieApp.models.Movie
-import com.example.movieApp.viewmodel.MainViewModel
+import com.example.movieApp.models.getMovies
+import com.example.movieApp.viewmodel.AddMovieScreenViewModel
 import com.example.movieApp.widgets.SelectInput
 import com.example.movieApp.widgets.TextInput
+import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 @Composable
-fun AddMovieScreen(navController: NavController, mainViewModel: MainViewModel) {
+fun AddMovieScreen(navController: NavController, viewModel: AddMovieScreenViewModel) {
     val scaffoldState = rememberScaffoldState()
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -38,7 +33,10 @@ fun AddMovieScreen(navController: NavController, mainViewModel: MainViewModel) {
         },
     ) { padding ->
         MainContent(Modifier.padding(padding)) {
-            mainViewModel.addMovie(it)
+            coroutineScope.launch {
+                viewModel.addMovie(it)
+            }
+
             navController.popBackStack()
         }
     }
