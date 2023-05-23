@@ -2,6 +2,7 @@ package com.example.movieApp.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.example.movieApp.viewmodel.DetailScreenViewModel
 import com.example.movieApp.viewmodel.HomeScreenViewModel
@@ -16,7 +17,7 @@ fun DetailScreen(navController: NavController, viewModel: DetailScreenViewModel,
     val coroutineScope = rememberCoroutineScope()
 
     Column {
-        SimpleAppBar(title = movie.title, navController = navController)
+        // SimpleAppBar(title = movie.title, navController = navController)
         MovieRow(
             movie = movie,
             favForceUpdate = true,
@@ -28,4 +29,9 @@ fun DetailScreen(navController: NavController, viewModel: DetailScreenViewModel,
             })
         ShowImages(urls = movie.images)
     }
+}
+
+@Composable
+fun Detail() {
+
 }
