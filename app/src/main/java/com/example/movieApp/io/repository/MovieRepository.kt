@@ -1,6 +1,6 @@
-package com.example.movieApp.repository
+package com.example.movieApp.io.repository
 
-import com.example.movieApp.db.MovieDao
+import com.example.movieApp.io.db.MovieDao
 import com.example.movieApp.models.Movie
 import kotlinx.coroutines.flow.Flow
 

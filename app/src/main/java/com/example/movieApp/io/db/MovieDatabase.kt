@@ -1,4 +1,4 @@
-package com.example.movieApp.db
+package com.example.movieApp.io.db
 
 import android.content.Context
 import androidx.room.Database
@@ -23,7 +23,7 @@ abstract class MovieDatabase: RoomDatabase() {
         private var Instance: MovieDatabase?=null
 
         fun getDatabase(context: Context): MovieDatabase {
-            return Instance?: synchronized(this) {
+            return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, MovieDatabase::class.java, "movie_db")
                     .fallbackToDestructiveMigration()
                     .build()

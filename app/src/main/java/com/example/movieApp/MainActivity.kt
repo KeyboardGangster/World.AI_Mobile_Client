@@ -3,6 +3,7 @@ package com.example.movieApp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -30,6 +31,26 @@ import com.example.movieApp.ui.theme.Lab2Theme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val permsRequestLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { perms: Map<String, Boolean> ->
+            for(permission in perms) {
+                if (!permission.value) {
+                    //granted
+                }
+                else {
+                    //not granted
+                }
+            }
+        }
+
+        if (checkExternalRWPermissions(this.applicationContext, permsRequestLauncher)) {
+            //perms granted, go ahead and allow requesting worlds. Load images from external storage.
+        }
+        else {
+            //perms not granted, deny requesting worlds. Load default images.
+        }
 
         setContent {
             Lab2Theme {

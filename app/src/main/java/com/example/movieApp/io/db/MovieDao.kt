@@ -1,4 +1,4 @@
-package com.example.movieApp.db
+package com.example.movieApp.io.db
 
 import androidx.room.Dao
 import androidx.room.Delete

@@ -1,8 +1,8 @@
 package com.example.movieApp.utils
 
 import android.content.Context
-import com.example.movieApp.db.MovieDatabase
-import com.example.movieApp.repository.MovieRepository
+import com.example.movieApp.io.db.MovieDatabase
+import com.example.movieApp.io.repository.MovieRepository
 import com.example.movieApp.viewmodel.AddMovieScreenViewModel
 import com.example.movieApp.viewmodel.AddMovieScreenViewModelFactory
 import com.example.movieApp.viewmodel.DetailScreenViewModelFactory
