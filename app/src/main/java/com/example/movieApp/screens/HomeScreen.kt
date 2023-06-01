@@ -38,7 +38,7 @@ fun HomeScreen(navController: NavController) {
         ScaffoldBottomBar(navController = navController) {
             Column(modifier = Modifier.fillMaxSize()) {
                 DisplayTags()
-                // ImageGallery()
+                ImageGallery()
             }
         }
     }

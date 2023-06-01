@@ -49,7 +49,6 @@ private fun TagRow(width: Dp, height: Dp, horizontalPadding: Dp) {
     LazyRow(
         modifier = Modifier
             .fadingEdge(leftRightFade)
-            .fillMaxSize()
     ) {
         items(Tags.values().size) { index ->
             Box(modifier = Modifier
