@@ -1,8 +1,13 @@
 package com.example.movieApp.utils
 
 import android.content.Context
-import com.example.movieApp.db.MovieDatabase
-import com.example.movieApp.repository.MovieRepository
+import androidx.compose.ui.platform.LocalContext
+import androidx.work.WorkManager
+import com.example.movieApp.io.ExternalStorageIO
+import com.example.movieApp.io.db.MovieDatabase
+import com.example.movieApp.io.db.WorldDatabase
+import com.example.movieApp.io.repository.MovieRepository
+import com.example.movieApp.io.repository.WorldRepository
 import com.example.movieApp.viewmodel.AddMovieScreenViewModel
 import com.example.movieApp.viewmodel.AddMovieScreenViewModelFactory
 import com.example.movieApp.viewmodel.DetailScreenViewModelFactory
@@ -10,13 +15,18 @@ import com.example.movieApp.viewmodel.FavoriteScreenViewModelFactory
 import com.example.movieApp.viewmodel.HomeScreenViewModelFactory
 
 object InjectorUtils {
+    private fun getWorldRepository(context: Context): WorldRepository {
+        return WorldRepository(WorldDatabase.getDatabase(context).worldDao(), ExternalStorageIO(context))
+    }
+
     private fun getMovieRepository(context: Context): MovieRepository {
         return MovieRepository(MovieDatabase.getDatabase(context).movieDao())
     }
 
     fun provideHomeScreenViewModelFactory(context: Context): HomeScreenViewModelFactory {
-        val repository = getMovieRepository(context)
-        return HomeScreenViewModelFactory(repository)
+        val repository = getWorldRepository(context)
+        val workManager = WorkManager.getInstance(context)
+        return HomeScreenViewModelFactory(repository, workManager)
     }
 
     fun provideFavoriteScreenViewModelFactory(context: Context): FavoriteScreenViewModelFactory {
