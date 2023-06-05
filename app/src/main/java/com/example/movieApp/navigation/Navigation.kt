@@ -37,10 +37,10 @@ fun MainNavigation() {
                 type = NavType.StringType
             })
         ) { backStackEntry ->
-            val movieID = backStackEntry.arguments?.getString(DETAIL_ARGUMENT_KEY)
+            val id = backStackEntry.arguments?.getString(DETAIL_ARGUMENT_KEY)
 
-            if (movieID != null)
-                DetailScreen(navController = navController, viewModel = detailScreenViewModel, movieID = movieID)
+            if (id != null)
+                DetailScreen(navController = navController, viewModel = detailScreenViewModel, id = id)
         }
         composable(
             route = Screen.Favorite.route

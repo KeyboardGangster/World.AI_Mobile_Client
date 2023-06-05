@@ -25,22 +25,22 @@ object InjectorUtils {
 
     fun provideHomeScreenViewModelFactory(context: Context): HomeScreenViewModelFactory {
         val repository = getWorldRepository(context)
-        val workManager = WorkManager.getInstance(context)
-        return HomeScreenViewModelFactory(repository, workManager)
+        return HomeScreenViewModelFactory(repository)
     }
 
     fun provideFavoriteScreenViewModelFactory(context: Context): FavoriteScreenViewModelFactory {
-        val repository = getMovieRepository(context)
+        val repository = getWorldRepository(context)
         return FavoriteScreenViewModelFactory(repository)
     }
 
     fun provideDetailScreenViewModelFactory(context: Context): DetailScreenViewModelFactory {
-        val repository = getMovieRepository(context)
+        val repository = getWorldRepository(context)
         return DetailScreenViewModelFactory(repository)
     }
 
     fun provideAddMovieScreenViewModelFactory(context: Context): AddMovieScreenViewModelFactory {
-        val repository = getMovieRepository(context)
-        return AddMovieScreenViewModelFactory(repository)
+        val repository = getWorldRepository(context)
+        val workManager = WorkManager.getInstance(context)
+        return AddMovieScreenViewModelFactory(repository, workManager)
     }
 }

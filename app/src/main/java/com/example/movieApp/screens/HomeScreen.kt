@@ -28,17 +28,39 @@ import kotlinx.coroutines.launch
 fun HomeScreen(navController: NavController) {
     val viewModel: HomeScreenViewModel = viewModel(
         factory = InjectorUtils.provideHomeScreenViewModelFactory(LocalContext.current))
+    val worlds = viewModel.worldList.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
 
     Surface(
         modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background
     ) {
-        val moviesState = viewModel.movieList.collectAsState()
-        val coroutineScope = rememberCoroutineScope()
-
         ScaffoldBottomBar(navController = navController) {
+
             Column(modifier = Modifier.fillMaxSize()) {
+                /*WorldList(
+                    worlds = worlds.value,
+                    favForceUpdate = false,
+                    onItemClick = {},
+                    onFavClick = {}
+                )
+                Button(onClick = {
+                    viewModel.enqueueFetchRequest("Some prompt", "some key")
+                }) {
+                    Text(text = "Add new World!")
+                }*/
+
                 DisplayTags()
-                ImageGallery()
+                ImageGallery(
+                    worlds = worlds.value,
+                    onFavClick = {
+                        coroutineScope.launch {
+                            viewModel.toggleFave(it)
+                        }
+                    },
+                    onClick = {
+                        navController.navigate(Screen.Detail.passId(it))
+                    }
+                )
             }
         }
     }

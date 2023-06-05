@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
-class HomeScreenViewModel(private val worldRepository: WorldRepository, private val workManager: WorkManager): ViewModel() {
+class HomeScreenViewModel(private val worldRepository: WorldRepository): ViewModel() {
     private val _worldList = MutableStateFlow(listOf<World>())
     val worldList: StateFlow<List<World>> = _worldList.asStateFlow()
 
@@ -40,23 +40,6 @@ class HomeScreenViewModel(private val worldRepository: WorldRepository, private 
                 _worldList.value = worlds
             }
         }
-    }
-
-    fun enqueueFetchRequest(prompt: String, key: String) {
-        //input worker-params
-        val fetchRequest = OneTimeWorkRequestBuilder<FetchWorldWorker>()
-            .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
-            .setInputData(workDataOf(
-                "Prompt" to prompt,
-                "Key" to key
-            ))
-            .build()
-        //schedule FetchWorldWorker
-        workManager.beginUniqueWork(
-            "fetch",
-            ExistingWorkPolicy.KEEP,
-            fetchRequest
-        ).enqueue()
     }
 
     suspend fun toggleFave(id: String) {

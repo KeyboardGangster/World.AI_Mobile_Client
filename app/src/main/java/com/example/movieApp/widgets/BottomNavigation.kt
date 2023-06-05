@@ -47,7 +47,9 @@ fun BottomBar(navController: NavController) {
             onClick = {
                 if (navController.currentDestination?.route != Screen.Home.route)
                 {
-                    navController.navigate(Screen.Home.route)
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Home.route)
+                    }
                 }
             }
         )
@@ -58,7 +60,9 @@ fun BottomBar(navController: NavController) {
             onClick = {
                 if (navController.currentDestination?.route != Screen.AddMovie.route)
                 {
-                    navController.navigate(Screen.AddMovie.route)
+                    navController.navigate(Screen.AddMovie.route) {
+                        popUpTo(Screen.Home.route)
+                    }
                 }
             }
         )
@@ -69,7 +73,9 @@ fun BottomBar(navController: NavController) {
             onClick = {
                 if (navController.currentDestination?.route != Screen.Favorite.route)
                 {
-                    navController.navigate(Screen.Favorite.route)
+                    navController.navigate(Screen.Favorite.route) {
+                        popUpTo(Screen.Home.route)
+                    }
                 }
             }
         )

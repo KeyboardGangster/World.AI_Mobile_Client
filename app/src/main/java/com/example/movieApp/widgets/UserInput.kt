@@ -18,12 +18,12 @@ import com.example.movieApp.models.ListItemSelectable
 
 
 @Composable
-fun TextInput(modifier: Modifier, value: String, label: String, errorMsg: String, predicate: (String) -> Boolean, onValueChange: (String) -> Unit): Boolean {
+fun TextInput(modifier: Modifier, singleLine: Boolean, value: String, label: String, errorMsg: String, predicate: (String) -> Boolean, onValueChange: (String) -> Unit): Boolean {
     val isValid = predicate.invoke(value)
 
     OutlinedTextField(
         value = value,
-        singleLine = true,
+        singleLine = singleLine,
         modifier = modifier.fillMaxWidth(),
         onValueChange = onValueChange,
         label = { Text(text = label) },

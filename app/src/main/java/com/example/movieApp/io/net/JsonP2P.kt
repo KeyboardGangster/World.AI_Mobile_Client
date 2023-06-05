@@ -59,11 +59,8 @@ private fun readBytes(stream: InputStream, bufferSize: Int, bytesToRead: Int): B
     do {
         bytesRead = stream.read(data, bytesReadTotal, Math.min(bufferSize, bytesToRead - bytesReadTotal))
         bytesReadTotal += bytesRead
-        //Log.d("Net", bytesReadTotal.toString() + "/" + bytesToRead)
     }
     while (bytesRead != 0 && bytesReadTotal != bytesToRead)
-
-    //Log.d("Net", "Read successful")
 
     return data
 }

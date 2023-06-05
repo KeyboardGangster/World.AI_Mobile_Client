@@ -14,8 +14,10 @@ import androidx.navigation.NavController
 import com.example.movieApp.navigation.Screen
 import com.example.movieApp.utils.InjectorUtils
 import com.example.movieApp.viewmodel.FavoriteScreenViewModel
-import com.example.movieApp.viewmodel.HomeScreenViewModel
+import com.example.movieApp.widgets.DisplayTags
+import com.example.movieApp.widgets.ImageGallery
 import com.example.movieApp.widgets.MovieList
+import com.example.movieApp.widgets.ScaffoldBottomBar
 import com.example.movieApp.widgets.SimpleAppBar
 import kotlinx.coroutines.launch
 
@@ -23,26 +25,27 @@ import kotlinx.coroutines.launch
 fun FavoriteScreen(navController: NavController) {
     val viewModel: FavoriteScreenViewModel = viewModel(
         factory = InjectorUtils.provideFavoriteScreenViewModelFactory(LocalContext.current))
-    val faveMoviesState = viewModel.faveMovieList.collectAsState()
+    val favesState = viewModel.worldListFaves.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
     var forceRecomposeHack: Boolean by remember {
         mutableStateOf(false)
     }
-
-    Column {
-        SimpleAppBar(title = "Favorites", navController = navController)
-        MovieList(
-            movies = faveMoviesState.value,
-            favForceUpdate = false,
-            onItemClick = {
-                navController.navigate(Screen.Detail.passId(it))
-            },
-            onFavClick = {
-                coroutineScope.launch {
-                    viewModel.toggleFave(it)
-                    forceRecomposeHack = !forceRecomposeHack
+    ScaffoldBottomBar(navController = navController) {
+        Column {
+            DisplayTags()
+            ImageGallery(
+                worlds = favesState.value,
+                onFavClick = {
+                    coroutineScope.launch {
+                        viewModel.toggleFave(it)
+                        forceRecomposeHack = !forceRecomposeHack
+                    }
+                },
+                onClick = {
+                    navController.navigate(Screen.Detail.passId(it))
                 }
-            })
+            )
+        }
     }
 }

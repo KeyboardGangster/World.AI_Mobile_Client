@@ -15,10 +15,11 @@ import androidx.navigation.NavController
 import com.example.movieApp.models.Genre
 import com.example.movieApp.models.ListItemSelectable
 import com.example.movieApp.widgets.SimpleAppBar
-import com.example.movieApp.models.Movie
-import com.example.movieApp.models.getMovies
+import com.example.movieApp.models.World
 import com.example.movieApp.utils.InjectorUtils
 import com.example.movieApp.viewmodel.AddMovieScreenViewModel
+import com.example.movieApp.widgets.DisplayPlaceholder
+import com.example.movieApp.widgets.ScaffoldBottomBar
 import com.example.movieApp.widgets.SelectInput
 import com.example.movieApp.widgets.TextInput
 import kotlinx.coroutines.launch
@@ -31,24 +32,22 @@ fun AddMovieScreen(navController: NavController) {
     val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
 
-    Scaffold(
-        scaffoldState = scaffoldState,
-        topBar = {
-            SimpleAppBar("Add Movie", navController)
-        },
-    ) { padding ->
-        MainContent(Modifier.padding(padding)) {
-            coroutineScope.launch {
-                viewModel.addMovie(it)
+    ScaffoldBottomBar(navController = navController) {
+        MainContent(
+            onGenerateClick = { prompt, key ->
+                //viewModel.enqueueFetchRequest(prompt, key)
+            },
+            onAddClick = {
+                coroutineScope.launch {
+                    viewModel.add(it)
+                }
             }
-
-            navController.popBackStack()
-        }
+        )
     }
 }
 
 @Composable
-fun MainContent(modifier: Modifier = Modifier, onAddClick: (Movie) -> Unit) {
+fun MainContent(modifier: Modifier = Modifier, onGenerateClick: (String, String) -> Unit, onAddClick: (World) -> Unit) {
     Surface(
         modifier = modifier
             .fillMaxWidth()
@@ -63,67 +62,69 @@ fun MainContent(modifier: Modifier = Modifier, onAddClick: (Movie) -> Unit) {
             horizontalAlignment = Alignment.Start
         ) {
 
-
-            var title by rememberSaveable {
+            var key by rememberSaveable {
                 mutableStateOf("")
             }
 
-            var year by rememberSaveable {
+            var prompt by rememberSaveable {
                 mutableStateOf("")
             }
 
-            val genres = Genre.values().toList()
+            val tags = Genre.values().toList()
 
-            var genreItems by rememberSaveable {
-                mutableStateOf(genres.map { genre ->
+            var tagsItems by rememberSaveable {
+                mutableStateOf(tags.map { genre ->
                     ListItemSelectable(
                         title = genre.toString(), isSelected = false
                     )
                 })
             }
 
-            var director by rememberSaveable {
-                mutableStateOf("")
-            }
-
-            var actors by rememberSaveable {
-                mutableStateOf("")
-            }
-
-            var plot by rememberSaveable {
-                mutableStateOf("")
-            }
-
-            var rating by rememberSaveable {
-                mutableStateOf("")
-            }
-
             var isEnabledSaveButton by rememberSaveable {
-                mutableStateOf(true)
+                mutableStateOf(false)
             }
 
-            val validTitle = TextInput(modifier = modifier,
-                value = title,
-                label = "Enter movie title.",
-                errorMsg = "Title must not be empty!",
+            var isEnabledGenerateButton by rememberSaveable() {
+                mutableStateOf(false)
+            }
+
+            DisplayPlaceholder(height = 200)
+            Button(
+                enabled = isEnabledGenerateButton,
+                onClick = {
+                    /*Fetch world from server and update this ui*/
+                    onGenerateClick.invoke(prompt, key)
+                }
+            ) {
+                Text("Generate")
+            }
+
+            val validKey = TextInput(
+                modifier = modifier,
+                singleLine = true,
+                value = key,
+                label = "Enter OpenAI-Key",
+                errorMsg = "Key must not be empty!",
                 predicate = { it.isNotEmpty() }) {
-                title = it
+                key = it
             }
 
-            val validYear = TextInput(modifier = modifier,
-                value = year,
-                label = "Enter movie year.",
-                errorMsg = "Year must not be empty!",
+            val validPrompt = TextInput(
+                modifier = modifier.height(200.dp),
+                singleLine = false,
+                value = prompt,
+                label = "Enter prompt.",
+                errorMsg = "Prompt must not be empty!",
                 predicate = { it.isNotEmpty() }) {
-                year = it
+                prompt = it
             }
 
-            val validGenre = SelectInput(modifier = modifier,
-                genreItems = genreItems,
-                label = "Select genres",
-                errorMsg = "Select at least one genre!",
-                predicate = { genreItems.any { it.isSelected } }) { genreItem ->
-                genreItems = genreItems.map {
+            val validTags = SelectInput(modifier = modifier,
+                genreItems = tagsItems,
+                label = "Select tags",
+                errorMsg = "Select at least one tag!",
+                predicate = { tagsItems.any { it.isSelected } }) { genreItem ->
+                tagsItems = tagsItems.map {
                     if (it.title == genreItem.title) {
                         genreItem.copy(isSelected = !genreItem.isSelected)
                     } else {
@@ -132,59 +133,20 @@ fun MainContent(modifier: Modifier = Modifier, onAddClick: (Movie) -> Unit) {
                 }
             }
 
-            val validDirector = TextInput(modifier = modifier,
-                value = director,
-                label = "Enter director.",
-                errorMsg = "Director must not be empty!",
-                predicate = { it.isNotEmpty() }) {
-                director = it
-            }
+            isEnabledGenerateButton = validPrompt && validKey
+            isEnabledSaveButton = validPrompt && validKey && validTags //&& isGenerated
 
-            val validActors = TextInput(modifier = modifier,
-                value = actors,
-                label = "Enter actors.",
-                errorMsg = "Actors must not be empty!",
-                predicate = { it.isNotEmpty() }) {
-                actors = it
-            }
-
-            TextInput(modifier = modifier.height(120.dp),
-                value = plot,
-                label = "Enter plot.",
-                errorMsg = "",
-                predicate = { true }) {
-                plot = it
-            }
-
-            val validRating = TextInput(modifier = modifier,
-                value = rating,
-                label = "Enter rating",
-                errorMsg = "Must be a number!",
-                predicate = { it.isNotEmpty() && it.toFloatOrNull() != null }) {
-                rating = if (it.startsWith("0")) {
-                    ""
-                } else {
-                    it
-                }
-            }
-
-            isEnabledSaveButton =
-                validTitle && validYear && validGenre && validDirector && validActors && validRating
+            val images: List<String> = listOf("")
 
             Button(enabled = isEnabledSaveButton, onClick = {
-                onAddClick.invoke(Movie(Random.nextInt().toString(),
-                    title,
-                    year,
-                    genreItems.filter { it.isSelected }.map { Genre.valueOf(it.title) },
-                    director,
-                    actors,
-                    plot,
-                    listOf("https://demofree.sirv.com/nope-not-here.jpg"),
-                    rating.toFloat()
-                )
-                )
+                onAddClick.invoke(World(Random.nextInt().toString(),
+                    prompt,
+                    images
+                    //tagsItems.filter { it.isSelected }.map { Genre.valueOf(it.title) },
+                    //seed
+                ))
             }) {
-                Text(text = "Add")
+                Text(text = "Save")
             }
         }
     }

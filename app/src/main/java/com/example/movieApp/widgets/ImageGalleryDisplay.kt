@@ -1,60 +1,39 @@
 package com.example.movieApp.widgets
 
-import android.content.res.Resources
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
-import android.icu.text.ListFormatter.Width
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Text
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Card
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.movieApp.R
 import kotlin.random.Random
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.Dp
-import com.example.movieApp.models.Movie
+import com.example.movieApp.R
 import com.example.movieApp.models.World
 
 @Composable
-fun ImageGallery() {
-    val images = listOf(
-        R.drawable.avatar2,
-        R.drawable.avatar2,
-        R.drawable.avatar2,
-        R.drawable.avatar2,
-        R.drawable.avatar2,
-        R.drawable.avatar2,
-        R.drawable.avatar2,
-        R.drawable.avatar2,
-        R.drawable.avatar2,
-        R.drawable.avatar2,
-        R.drawable.avatar2,
-        R.drawable.avatar2,
-        R.drawable.avatar2,
-        R.drawable.avatar2,
-        R.drawable.avatar2,
-        R.drawable.avatar2,
-        R.drawable.avatar2,
-        R.drawable.avatar2,
-        R.drawable.avatar2,
-        R.drawable.avatar2,
-        R.drawable.avatar2,
-        R.drawable.avatar2
-    )
+fun ImageGallery(worlds: List<World>, onFavClick: (String) -> Unit, onClick: (String) -> Unit) {
+    val rng = Random(seed = 0)
 
     Column (
         modifier = Modifier
@@ -70,48 +49,131 @@ fun ImageGallery() {
                 numColumns = 2,
                 modifier = Modifier.padding(5.dp)
             ) {
-                images.forEach { img ->
-                    Card (
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
-                            .height(Random.nextInt(160, 300).dp),
-                        elevation = 10.dp,
-                        shape = RoundedCornerShape(10.dp)
-                    ) {
-                        Box (
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .align(Alignment.CenterHorizontally)
-                        ) {
-                            Image (
-                                painter =  painterResource(id = img),
-                                contentDescription = "images",
-                                alignment = Alignment.Center,
-                                contentScale = ContentScale.FillHeight
-                            )
-
-                            Box (
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.TopEnd
-                            ) {
-                                IconButton(onClick = {
-                                    println("Test")
-                                }) {
-                                    Icon(
-                                        tint = Color.White,
-                                        imageVector = Icons.Default.BookmarkBorder,
-                                        contentDescription = "Bookmarked"
-                                    )
-                                }
-                            }
-                        }
-                    }
+                worlds.forEach { world ->
+                    DisplayWorld(
+                        rng = rng,
+                        world = world,
+                        onFavClick = onFavClick,
+                        onClick = onClick
+                    )
                 }
             }
         }
     }
 }
+
+@Composable
+fun DisplayWorld(rng: Random, world: World, onFavClick: (String) -> Unit, onClick: (String) -> Unit) {
+    Card (
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+            .height(rng.nextInt(160, 300).dp),
+        elevation = 10.dp,
+        shape = RoundedCornerShape(10.dp)
+    ) {
+        Box (
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            val bmp = BitmapFactory.decodeFile(world.images[0])
+            Image (
+                modifier = Modifier.fillMaxSize().clickable { onClick(world.id) },
+                painter = BitmapPainter(bmp.asImageBitmap()),
+                contentDescription = "images",
+                alignment = Alignment.Center,
+                contentScale = ContentScale.FillHeight,
+            )
+
+            Box (
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.TopEnd
+            ) {
+                IconButton(onClick = {
+                    onFavClick(world.id)
+                }) {
+                    Icon(
+                        tint = Color.White,
+                        imageVector = if (world.isFavorite) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
+                        contentDescription = "Bookmarked"
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun DisplayWorld(height: Int, world: World, onFavClick: (String) -> Unit, onClick: (String) -> Unit) {
+    var isFaveState by remember {
+        mutableStateOf(world.isFavorite)
+    }
+
+    Card (
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+            .height(height.dp),
+        elevation = 10.dp,
+        shape = RoundedCornerShape(10.dp)
+    ) {
+        Box (
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            val bmp = BitmapFactory.decodeFile(world.images[0])
+            Image (
+                modifier = Modifier.fillMaxSize().clickable { onClick(world.id) },
+                painter = BitmapPainter(bmp.asImageBitmap()),
+                contentDescription = "images",
+                alignment = Alignment.Center,
+                contentScale = ContentScale.FillWidth
+            )
+
+            Box (
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.TopEnd
+            ) {
+                IconButton(onClick = {
+                    onFavClick(world.id)
+                    isFaveState = !isFaveState
+                }) {
+                    Icon(
+                        tint = Color.White,
+                        imageVector = if (isFaveState) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
+                        contentDescription = "Bookmarked"
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun DisplayPlaceholder(height: Int) {
+    Card (
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+            .height(height.dp),
+        elevation = 10.dp,
+        shape = RoundedCornerShape(10.dp)
+    ) {
+        Box (
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            Image (
+                modifier = Modifier.fillMaxSize(),
+                painter = painterResource(id = R.drawable.avatar2),
+                contentDescription = "images",
+                alignment = Alignment.Center,
+                contentScale = ContentScale.FillWidth
+            )
+        }
+    }
+}
+
 
 @Composable
 fun CustomStaggeredVerticalGrid(
@@ -173,31 +235,4 @@ private fun testColumn(columnHeights: IntArray): Int {
         }
     }
     return columnIndex
-}
-
-@Composable
-fun WorldList(worlds: List<World>, favForceUpdate: Boolean, onItemClick: (String) -> Unit, onFavClick: (String) -> Unit) {
-    LazyColumn {
-        items(worlds) { world ->
-            WorldEntry(
-                world = world,
-                favForceUpdate = favForceUpdate,
-                onItemClick = { onItemClick.invoke(world.id) },
-                onFavClick = { onFavClick.invoke(world.id) })
-        }
-    }
-}
-
-@Composable
-fun WorldEntry(world: World, favForceUpdate: Boolean, onItemClick: () -> Unit, onFavClick: () -> Unit) {
-    val bmp = BitmapFactory.decodeFile(world.images[0])
-    Column(
-        modifier = Modifier.clip(RoundedCornerShape(Dp(20f))),
-        verticalArrangement = Arrangement.Top,
-    ) {
-        Image(
-            painter= BitmapPainter(bmp.asImageBitmap()),
-            contentDescription = null
-        )
-    }
 }
