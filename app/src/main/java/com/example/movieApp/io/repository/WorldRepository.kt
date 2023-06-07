@@ -10,7 +10,15 @@ import kotlinx.coroutines.flow.Flow
 class WorldRepository(private val worldDao: WorldDao, private val storage: ExternalStorageIO) {
     suspend fun fetchImagesFromServer(prompt: String, key: String): Bitmap? = requestImages(prompt, key)
 
-    suspend fun saveImagesToExternalStorage(bmp: Bitmap): String = storage.writeToImage(bmp)
+    suspend fun cacheImages(bmp: List<Bitmap>): List<String> = storage.cache(bmp)
+
+    suspend fun saveImages(bmp: List<Bitmap>): List<String> = storage.save(bmp)
+
+    suspend fun loadImages(paths: List<String>): List<Bitmap> = storage.load(paths)
+
+    fun loadImage(path: String): Bitmap = storage.load(path)
+
+    suspend fun deleteImages(filePaths: List<String>) = storage.delete(filePaths)
 
     suspend fun add(world: World) = worldDao.insert(world)
 

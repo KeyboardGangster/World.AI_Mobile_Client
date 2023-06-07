@@ -39,7 +39,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+/*
         val permsRequestLauncher = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { perms: Map<String, Boolean> ->
@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
         }
         else {
             //perms not granted, deny requesting worlds. Load default images.
-        }
+        }*/
 
         setContent {
             Lab2Theme {

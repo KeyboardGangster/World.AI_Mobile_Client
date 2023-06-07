@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 class DetailScreenViewModel(private val worldRepository: WorldRepository): ViewModel() {
     private val _worldList = MutableStateFlow(listOf<World>())
-    val worldList: StateFlow<List<World>> =_worldList.asStateFlow()
+    private val worldList: StateFlow<List<World>> =_worldList.asStateFlow()
 
     init {
         viewModelScope.launch {

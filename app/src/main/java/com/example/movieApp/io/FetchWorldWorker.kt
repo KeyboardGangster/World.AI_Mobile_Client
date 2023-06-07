@@ -6,6 +6,7 @@ import androidx.work.WorkerParameters
 import com.example.movieApp.io.db.WorldDatabase
 import com.example.movieApp.io.repository.WorldRepository
 import com.example.movieApp.models.World
+import com.example.movieApp.viewmodel.AddMovieScreenViewModel
 import kotlin.random.Random
 
 class FetchWorldWorker(private val context: Context, private val workerParameters: WorkerParameters):
@@ -23,13 +24,17 @@ class FetchWorldWorker(private val context: Context, private val workerParameter
             return Result.failure()
 
         val bmp = worldRepository.fetchImagesFromServer(prompt, key) ?: return Result.failure()
-        val filePath = worldRepository.saveImagesToExternalStorage(bmp)
+        val bitmaps = listOf(bmp)
+        val cachedFilesPaths = worldRepository.cacheImages(bitmaps)
+        AddMovieScreenViewModel.currentChanges?.value = cachedFilesPaths
+
+        /*val filePath = worldRepository.saveImagesToExternalStorage(bmp)
         val world = World(
             id = Random.nextInt().toString(),
             prompt = prompt,
             images = listOf(filePath)
         )
-        worldRepository.add(world)
+        worldRepository.add(world)*/
 
         return Result.success()
     }

@@ -1,5 +1,6 @@
 package com.example.movieApp.widgets
 
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -166,6 +167,31 @@ fun DisplayPlaceholder(height: Int) {
             Image (
                 modifier = Modifier.fillMaxSize(),
                 painter = painterResource(id = R.drawable.avatar2),
+                contentDescription = "images",
+                alignment = Alignment.Center,
+                contentScale = ContentScale.FillWidth
+            )
+        }
+    }
+}
+
+@Composable
+fun DisplayPlaceholder(height: Int, bitmap: Bitmap) {
+    Card (
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+            .height(height.dp),
+        elevation = 10.dp,
+        shape = RoundedCornerShape(10.dp)
+    ) {
+        Box (
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            Image (
+                modifier = Modifier.fillMaxSize(),
+                painter = BitmapPainter(bitmap.asImageBitmap()),
                 contentDescription = "images",
                 alignment = Alignment.Center,
                 contentScale = ContentScale.FillWidth
