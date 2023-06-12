@@ -1,6 +1,5 @@
 package com.example.movieApp.screens
 
-import android.graphics.Bitmap
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -13,23 +12,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.movieApp.models.Genre
 import com.example.movieApp.models.ListItemSelectable
-import com.example.movieApp.widgets.SimpleAppBar
-import com.example.movieApp.models.World
+import com.example.movieApp.models.Tags
 import com.example.movieApp.utils.InjectorUtils
-import com.example.movieApp.viewmodel.AddMovieScreenViewModel
-import com.example.movieApp.widgets.DisplayPlaceholder
+import com.example.movieApp.viewmodel.AddScreenViewModel
+import com.example.movieApp.widgets.PreviewImage
 import com.example.movieApp.widgets.ScaffoldBottomBar
 import com.example.movieApp.widgets.SelectInput
 import com.example.movieApp.widgets.TextInput
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 @Composable
-fun AddMovieScreen(navController: NavController) {
-    val viewModel: AddMovieScreenViewModel = viewModel(
-        factory = InjectorUtils.provideAddMovieScreenViewModelFactory(LocalContext.current))
+fun AddScreen(navController: NavController) {
+    val viewModel: AddScreenViewModel = viewModel(
+        factory = InjectorUtils.provideAddScreenViewModelFactory(LocalContext.current))
     val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -56,12 +52,12 @@ fun AddMovieScreen(navController: NavController) {
                     mutableStateOf("")
                 }
 
-                val tags = Genre.values().toList()
+                val tags = Tags.values().toList()
 
                 var tagsItems by rememberSaveable {
-                    mutableStateOf(tags.map { genre ->
+                    mutableStateOf(tags.map { tag ->
                         ListItemSelectable(
-                            title = genre.toString(), isSelected = false
+                            title = tag.toString(), isSelected = false
                         )
                     })
                 }
@@ -74,16 +70,10 @@ fun AddMovieScreen(navController: NavController) {
                     mutableStateOf(false)
                 }
 
-                if (AddMovieScreenViewModel.currentChanges?.value.isNullOrEmpty())
-                    DisplayPlaceholder(height = 200)
-                else {
-                    val bmp: Bitmap? = viewModel.loadSingleCachedImage()
+                val cachedFilePaths = AddScreenViewModel.currentChanges?.value
+                if (!cachedFilePaths.isNullOrEmpty())
+                    PreviewImage(height = 200, path = cachedFilePaths[0])
 
-                    if (bmp == null)
-                        DisplayPlaceholder(height = 200)
-                    else
-                        DisplayPlaceholder(height = 200, bitmap = bmp)
-                }
                 Button(
                     enabled = isEnabledGenerateButton,
                     onClick = {
@@ -130,8 +120,8 @@ fun AddMovieScreen(navController: NavController) {
 
                 isEnabledGenerateButton = validPrompt && validKey
                 isEnabledSaveButton = validPrompt && validKey && validTags &&
-                        AddMovieScreenViewModel.currentChanges != null &&
-                        AddMovieScreenViewModel.currentChanges?.value?.isNotEmpty()?: false
+                        AddScreenViewModel.currentChanges != null &&
+                        AddScreenViewModel.currentChanges?.value?.isNotEmpty()?: false
 
                 Button(enabled = isEnabledSaveButton, onClick = {
                     coroutineScope.launch {

@@ -5,6 +5,8 @@ import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -15,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,12 +31,13 @@ import androidx.compose.ui.unit.dp
 import kotlin.random.Random
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import com.example.movieApp.R
 import com.example.movieApp.models.World
 
 @Composable
-fun ImageGallery(worlds: List<World>, onFavClick: (String) -> Unit, onClick: (String) -> Unit) {
+fun WorldGallery(worlds: List<World>, onFavClick: (String) -> Unit, onClick: (String) -> Unit) {
     val rng = Random(seed = 0)
 
     Column (
@@ -51,8 +55,8 @@ fun ImageGallery(worlds: List<World>, onFavClick: (String) -> Unit, onClick: (St
                 modifier = Modifier.padding(5.dp)
             ) {
                 worlds.forEach { world ->
-                    DisplayWorld(
-                        rng = rng,
+                    WorldSingleImage(
+                        height = rng.nextInt(160, 300),
                         world = world,
                         onFavClick = onFavClick,
                         onClick = onClick
@@ -64,12 +68,12 @@ fun ImageGallery(worlds: List<World>, onFavClick: (String) -> Unit, onClick: (St
 }
 
 @Composable
-fun DisplayWorld(rng: Random, world: World, onFavClick: (String) -> Unit, onClick: (String) -> Unit) {
+fun WorldSingleImage(height: Int, world: World, onFavClick: (String) -> Unit, onClick: (String) -> Unit) {
     Card (
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
-            .height(rng.nextInt(160, 300).dp),
+            .height(height.dp),
         elevation = 10.dp,
         shape = RoundedCornerShape(10.dp)
     ) {
@@ -77,15 +81,14 @@ fun DisplayWorld(rng: Random, world: World, onFavClick: (String) -> Unit, onClic
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            val bmp = BitmapFactory.decodeFile(world.images[0])
-            Image (
-                modifier = Modifier.fillMaxSize().clickable { onClick(world.id) },
-                painter = BitmapPainter(bmp.asImageBitmap()),
-                contentDescription = "images",
+            DisplaySavedImage(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable { onClick(world.id) },
+                path = world.images[0],
                 alignment = Alignment.Center,
-                contentScale = ContentScale.FillHeight,
+                contentScale = ContentScale.FillHeight
             )
-
             Box (
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.TopEnd
@@ -105,12 +108,12 @@ fun DisplayWorld(rng: Random, world: World, onFavClick: (String) -> Unit, onClic
 }
 
 @Composable
-fun DisplayWorld(height: Int, world: World, onFavClick: (String) -> Unit, onClick: (String) -> Unit) {
+fun WorldAllImages(height: Int, world: World, onFavClick: (String) -> Unit, onClick: (String) -> Unit) {
     var isFaveState by remember {
         mutableStateOf(world.isFavorite)
     }
 
-    Card (
+    Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
@@ -118,22 +121,25 @@ fun DisplayWorld(height: Int, world: World, onFavClick: (String) -> Unit, onClic
         elevation = 10.dp,
         shape = RoundedCornerShape(10.dp)
     ) {
-        Box (
-            modifier = Modifier
-                .fillMaxSize()
+        Box(
+            modifier = Modifier.fillMaxSize()
         ) {
-            val bmp = BitmapFactory.decodeFile(world.images[0])
-            Image (
-                modifier = Modifier.fillMaxSize().clickable { onClick(world.id) },
-                painter = BitmapPainter(bmp.asImageBitmap()),
-                contentDescription = "images",
-                alignment = Alignment.Center,
-                contentScale = ContentScale.FillWidth
-            )
+            LazyRow {
+                items(world.images) {
+                    DisplaySavedImage(
+                        modifier = Modifier
+                            .width(LocalConfiguration.current.screenWidthDp.dp)
+                            .fillMaxSize()
+                            .clickable { onClick(world.id) },
+                        path = it,
+                        alignment = Alignment.Center,
+                        contentScale = ContentScale.FillWidth
+                    )
+                }
+            }
 
-            Box (
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.TopEnd
+            Box(
+                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd
             ) {
                 IconButton(onClick = {
                     onFavClick(world.id)
@@ -151,7 +157,7 @@ fun DisplayWorld(height: Int, world: World, onFavClick: (String) -> Unit, onClic
 }
 
 @Composable
-fun DisplayPlaceholder(height: Int) {
+fun PreviewImage(height: Int, path: String) {
     Card (
         modifier = Modifier
             .fillMaxWidth()
@@ -164,42 +170,40 @@ fun DisplayPlaceholder(height: Int) {
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            Image (
+            DisplaySavedImage(
                 modifier = Modifier.fillMaxSize(),
-                painter = painterResource(id = R.drawable.avatar2),
-                contentDescription = "images",
+                path = path,
                 alignment = Alignment.Center,
-                contentScale = ContentScale.FillWidth
-            )
+                contentScale = ContentScale.FillWidth)
         }
     }
 }
 
 @Composable
-fun DisplayPlaceholder(height: Int, bitmap: Bitmap) {
-    Card (
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp)
-            .height(height.dp),
-        elevation = 10.dp,
-        shape = RoundedCornerShape(10.dp)
-    ) {
-        Box (
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            Image (
-                modifier = Modifier.fillMaxSize(),
-                painter = BitmapPainter(bitmap.asImageBitmap()),
-                contentDescription = "images",
-                alignment = Alignment.Center,
-                contentScale = ContentScale.FillWidth
-            )
-        }
+fun DisplaySavedImage(modifier: Modifier, path: String, alignment: Alignment, contentScale: ContentScale) {
+    var bmp: Bitmap? by remember {
+        mutableStateOf(null)
     }
-}
 
+    LaunchedEffect(key1 = path) {
+        bmp = BitmapFactory.decodeFile(path)
+    }
+
+    if (bmp == null) Image(
+        modifier = modifier,
+        painter = painterResource(id = R.drawable.placeholder),
+        contentDescription = "loading...",
+        alignment = alignment,
+        contentScale = contentScale
+    )
+    else Image(
+        modifier = modifier,
+        painter = BitmapPainter(bmp!!.asImageBitmap()),
+        contentDescription = "loaded image",
+        alignment = alignment,
+        contentScale = contentScale
+    )
+}
 
 @Composable
 fun CustomStaggeredVerticalGrid(

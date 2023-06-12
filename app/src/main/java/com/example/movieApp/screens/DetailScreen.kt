@@ -4,20 +4,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.movieApp.viewmodel.DetailScreenViewModel
-import com.example.movieApp.viewmodel.HomeScreenViewModel
-import com.example.movieApp.widgets.BottomBar
 import com.example.movieApp.widgets.DisplayTags
-import com.example.movieApp.widgets.DisplayWorld
-import com.example.movieApp.widgets.MovieRow
+import com.example.movieApp.widgets.WorldAllImages
 import com.example.movieApp.widgets.ScaffoldBottomBar
-import com.example.movieApp.widgets.ShowImages
-import com.example.movieApp.widgets.SimpleAppBar
 import kotlinx.coroutines.launch
 
 @Composable
@@ -27,7 +20,7 @@ fun DetailScreen(navController: NavController, viewModel: DetailScreenViewModel,
 
     ScaffoldBottomBar(navController = navController) {
         Column {
-            DisplayWorld(
+            WorldAllImages(
                 height = 200,
                 world = world,
                 onFavClick = {

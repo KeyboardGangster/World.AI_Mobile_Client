@@ -15,10 +15,8 @@ import com.example.movieApp.navigation.Screen
 import com.example.movieApp.utils.InjectorUtils
 import com.example.movieApp.viewmodel.FavoriteScreenViewModel
 import com.example.movieApp.widgets.DisplayTags
-import com.example.movieApp.widgets.ImageGallery
-import com.example.movieApp.widgets.MovieList
+import com.example.movieApp.widgets.WorldGallery
 import com.example.movieApp.widgets.ScaffoldBottomBar
-import com.example.movieApp.widgets.SimpleAppBar
 import kotlinx.coroutines.launch
 
 @Composable
@@ -34,7 +32,7 @@ fun FavoriteScreen(navController: NavController) {
     ScaffoldBottomBar(navController = navController) {
         Column {
             DisplayTags()
-            ImageGallery(
+            WorldGallery(
                 worlds = favesState.value,
                 onFavClick = {
                     coroutineScope.launch {

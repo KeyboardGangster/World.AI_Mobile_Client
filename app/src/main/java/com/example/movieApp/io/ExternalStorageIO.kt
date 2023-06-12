@@ -14,7 +14,7 @@ class ExternalStorageIO(private val context: Context) {
         if (File(path).exists())
             return BitmapFactory.decodeFile(path)
         else
-            return BitmapFactory.decodeResource(context.resources, R.drawable.avatar2)
+            return BitmapFactory.decodeResource(context.resources, R.drawable.missing)
     }
 
     suspend fun load(paths: List<String>): List<Bitmap> {

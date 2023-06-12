@@ -2,7 +2,6 @@ package com.example.movieApp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.movieApp.io.repository.MovieRepository
 import com.example.movieApp.io.repository.WorldRepository
 
 class FavoriteScreenViewModelFactory(private val repository: WorldRepository): ViewModelProvider.Factory {

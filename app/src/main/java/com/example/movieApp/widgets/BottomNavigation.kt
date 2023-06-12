@@ -56,11 +56,11 @@ fun BottomBar(navController: NavController) {
 
         BottomNavigationItem (
             icon = { Icon(imageVector = Icons.Rounded.Add, contentDescription = "Add") },
-            selected = navController.currentDestination?.route == Screen.AddMovie.route,
+            selected = navController.currentDestination?.route == Screen.Add.route,
             onClick = {
-                if (navController.currentDestination?.route != Screen.AddMovie.route)
+                if (navController.currentDestination?.route != Screen.Add.route)
                 {
-                    navController.navigate(Screen.AddMovie.route) {
+                    navController.navigate(Screen.Add.route) {
                         popUpTo(Screen.Home.route)
                     }
                 }

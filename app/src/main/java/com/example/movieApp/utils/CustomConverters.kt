@@ -2,9 +2,8 @@ package com.example.movieApp.utils
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.room.TypeConverter
-import com.example.movieApp.models.Genre
+import com.example.movieApp.models.Tags
 import java.nio.ByteBuffer
 
 
@@ -16,10 +15,10 @@ class CustomConverters {
     fun stringToStringList(value: String) = value.split(",").map{ it.trim() }
 
     @TypeConverter
-    fun enumListToString(value: List<Genre>) = value.joinToString(",") { it.name }
+    fun enumListToString(value: List<Tags>) = value.joinToString(",") { it.name }
 
     @TypeConverter
-    fun stringToEnumList(value: String) = value.split(",").map { Genre.valueOf(it.trim()) }
+    fun stringToEnumList(value: String) = value.split(",").map { Tags.valueOf(it.trim()) }
 }
 
 fun byteArrayToBitmap(bytes: ByteArray): Bitmap {
