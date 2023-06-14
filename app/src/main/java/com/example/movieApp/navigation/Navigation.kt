@@ -10,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.movieApp.screens.*
 import com.example.movieApp.utils.InjectorUtils
+import com.example.movieApp.viewmodel.AddScreenViewModel
 import com.example.movieApp.viewmodel.DetailScreenViewModel
 
 @Composable
@@ -17,6 +18,8 @@ fun MainNavigation() {
     //This is here so the viewModel can cache all the movies before opening detail-screen
     val detailScreenViewModel: DetailScreenViewModel = viewModel(
         factory = InjectorUtils.provideDetailScreenViewModelFactory(LocalContext.current))
+    val addScreenViewModel: AddScreenViewModel = viewModel(
+        factory = InjectorUtils.provideAddScreenViewModelFactory(LocalContext.current))
 
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.Home.route) {
@@ -44,7 +47,7 @@ fun MainNavigation() {
         composable(
             route = Screen.Add.route
         ) {
-            AddScreen(navController = navController)
+            AddScreen(navController = navController, viewModel = addScreenViewModel)
         }
     }
 }

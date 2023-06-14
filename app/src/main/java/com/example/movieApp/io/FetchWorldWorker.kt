@@ -38,6 +38,9 @@ class FetchWorldWorker(private val context: Context, private val workerParameter
             AddScreenViewModel.currentChanges?.value = cachedFilesPaths
             Log.d("Worker", "Updated static property!!!!")
         }
+        catch(exception: java.net.ConnectException) {
+            AddScreenViewModel.connectionFailed?.value = true
+        }
         catch(exception: Exception) {
             Log.d("Worker", exception.toString())
         }

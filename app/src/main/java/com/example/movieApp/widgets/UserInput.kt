@@ -1,11 +1,9 @@
 package com.example.movieApp.widgets
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -51,15 +49,13 @@ fun SelectInput(
     Text(
         modifier = modifier.padding(top = 4.dp),
         text = label,
-        textAlign = TextAlign.Start,
+        textAlign = TextAlign.Center,
         style = MaterialTheme.typography.h6
     )
 
     if (!isValid) Text(errorMsg, color = Color.Red)
 
-    LazyHorizontalGrid(
-        modifier = Modifier.height(100.dp), rows = GridCells.Fixed(3)
-    ) {
+    LazyRow {
         items(genreItems) { genreItem ->
             Chip(modifier = Modifier.padding(2.dp), colors = ChipDefaults.chipColors(
                 backgroundColor = if (genreItem.isSelected) colorResource(id = R.color.purple_200)

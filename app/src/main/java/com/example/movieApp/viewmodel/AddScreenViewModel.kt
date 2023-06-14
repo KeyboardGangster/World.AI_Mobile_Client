@@ -19,6 +19,7 @@ class AddScreenViewModel(private val worldRepository: WorldRepository, private v
         @Volatile
         var currentChanges: MutableState<List<String>>?=mutableStateOf(listOf())
         var generationFailed: MutableState<Boolean>?=mutableStateOf(false)
+        var connectionFailed: MutableState<Boolean>?=mutableStateOf(false)
     }
 
     val key: MutableState<String> = mutableStateOf("")
@@ -29,18 +30,21 @@ class AddScreenViewModel(private val worldRepository: WorldRepository, private v
             currentChanges = mutableStateOf(listOf())
         if (generationFailed == null)
             generationFailed = mutableStateOf(false)
+        if (connectionFailed == null)
+            connectionFailed = mutableStateOf(false)
     }
 
-    fun enqueueFetchRequest(prompt: String, key: String) {
+    fun enqueueFetchRequest() {
         currentChanges?.value = listOf()
         generationFailed?.value = false
+        connectionFailed?.value = false
         //input worker-params
         val fetchRequest = OneTimeWorkRequestBuilder<FetchWorldWorker>()
             .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
             .setInputData(
                 workDataOf(
-                    "Prompt" to prompt,
-                    "Key" to key
+                    "Prompt" to this.prompt.value,
+                    "Key" to this.key.value
                 )
             )
             .build()
@@ -52,17 +56,18 @@ class AddScreenViewModel(private val worldRepository: WorldRepository, private v
         ).enqueue()
     }
 
-    suspend fun saveWorld(prompt: String) {
+    suspend fun saveWorld() {
         val cachedFilePaths = currentChanges?.value?: return
         val cachedBitmaps = worldRepository.loadImages(cachedFilePaths)
         val filePaths = worldRepository.saveImages(cachedBitmaps)
         worldRepository.deleteImages(cachedFilePaths)
         currentChanges?.value = listOf()
         generationFailed?.value = false
+        connectionFailed?.value = false
 
         val newWorld: World = World(
             id = Random.nextInt().toString(),
-            prompt = prompt,
+            prompt = this.prompt.value,
             images = filePaths
             //tagsItems.filter { it.isSelected }.map { Genre.valueOf(it.title) },
             //seed
@@ -76,5 +81,6 @@ class AddScreenViewModel(private val worldRepository: WorldRepository, private v
         worldRepository.deleteImages(cachedFilePaths)
         currentChanges?.value = listOf()
         generationFailed?.value = false
+        connectionFailed?.value = false
     }
 }
