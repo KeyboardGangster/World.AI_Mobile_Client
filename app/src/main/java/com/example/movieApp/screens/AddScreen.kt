@@ -74,6 +74,11 @@ fun AddScreen(navController: NavController) {
                 if (!cachedFilePaths.isNullOrEmpty())
                     PreviewImage(height = 200, path = cachedFilePaths[0])
 
+                if (AddScreenViewModel.generationFailed?.value == null ||
+                        AddScreenViewModel.generationFailed?.value == true) {
+                    Text(text = "Generation Failed! Check your OpenAPI-key and prompt!")
+                }
+                
                 Button(
                     enabled = isEnabledGenerateButton,
                     onClick = {

@@ -18,14 +18,22 @@ class AddScreenViewModel(private val worldRepository: WorldRepository, private v
     companion object {
         @Volatile
         var currentChanges: MutableState<List<String>>?=mutableStateOf(listOf())
+        var generationFailed: MutableState<Boolean>?=mutableStateOf(false)
     }
+
+    val key: MutableState<String> = mutableStateOf("")
+    val prompt: MutableState<String> = mutableStateOf("")
 
     init {
         if (currentChanges == null)
             currentChanges = mutableStateOf(listOf())
+        if (generationFailed == null)
+            generationFailed = mutableStateOf(false)
     }
 
     fun enqueueFetchRequest(prompt: String, key: String) {
+        currentChanges?.value = listOf()
+        generationFailed?.value = false
         //input worker-params
         val fetchRequest = OneTimeWorkRequestBuilder<FetchWorldWorker>()
             .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
@@ -50,6 +58,7 @@ class AddScreenViewModel(private val worldRepository: WorldRepository, private v
         val filePaths = worldRepository.saveImages(cachedBitmaps)
         worldRepository.deleteImages(cachedFilePaths)
         currentChanges?.value = listOf()
+        generationFailed?.value = false
 
         val newWorld: World = World(
             id = Random.nextInt().toString(),
@@ -66,5 +75,6 @@ class AddScreenViewModel(private val worldRepository: WorldRepository, private v
         val cachedFilePaths = currentChanges?.value?: return
         worldRepository.deleteImages(cachedFilePaths)
         currentChanges?.value = listOf()
+        generationFailed?.value = false
     }
 }

@@ -24,9 +24,16 @@ class FetchWorldWorker(private val context: Context, private val workerParameter
             if (prompt == null || key == null)
                 return Result.failure()
 
-            val bitmaps = worldRepository.fetchImagesFromServer(prompt, key) ?: return Result.failure()
+            val responseData = worldRepository.fetchFromServer(prompt, key)
+
+            if (!responseData.success) {
+                //failure
+                AddScreenViewModel.generationFailed?.value = true
+                return Result.success()
+            }
+
             Log.d("Worker", "Got images!!!!")
-            val cachedFilesPaths = worldRepository.cacheImages(bitmaps)
+            val cachedFilesPaths = worldRepository.cacheImages(responseData.images)
             Log.d("Worker", "Cached images!!!!")
             AddScreenViewModel.currentChanges?.value = cachedFilesPaths
             Log.d("Worker", "Updated static property!!!!")

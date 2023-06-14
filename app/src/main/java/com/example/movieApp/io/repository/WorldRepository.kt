@@ -3,12 +3,13 @@ package com.example.movieApp.io.repository
 import android.graphics.Bitmap
 import com.example.movieApp.io.ExternalStorageIO
 import com.example.movieApp.io.db.WorldDao
-import com.example.movieApp.io.net.requestImages
+import com.example.movieApp.io.net.requestGeneration
+import com.example.movieApp.models.ResponseData
 import com.example.movieApp.models.World
 import kotlinx.coroutines.flow.Flow
 
 class WorldRepository(private val worldDao: WorldDao, private val storage: ExternalStorageIO) {
-    suspend fun fetchImagesFromServer(prompt: String, key: String): List<Bitmap> = requestImages(prompt, key)
+    suspend fun fetchFromServer(prompt: String, key: String): ResponseData = requestGeneration(prompt, key)
 
     suspend fun cacheImages(bmp: List<Bitmap>): List<String> = storage.cache(bmp)
 

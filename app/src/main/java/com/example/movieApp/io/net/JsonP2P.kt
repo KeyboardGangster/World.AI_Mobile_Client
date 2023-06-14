@@ -3,6 +3,7 @@ package com.example.movieApp.io.net
 import android.graphics.Bitmap
 import android.util.Base64
 import android.util.Log
+import com.example.movieApp.models.ResponseData
 import com.example.movieApp.utils.byteArrayToBitmap
 import com.example.movieApp.utils.byteArrayToInt32
 import com.example.movieApp.utils.numberToByteArray
@@ -11,7 +12,7 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.net.Socket
 
-suspend fun requestImages(prompt: String, key: String): List<Bitmap> {
+suspend fun requestGeneration(prompt: String, key: String): ResponseData {
     val client = Socket("10.0.2.2", 9999)
     val inputStream = client.getInputStream().buffered()
     val outputStream = client.getOutputStream().buffered()
@@ -30,6 +31,14 @@ suspend fun requestImages(prompt: String, key: String): List<Bitmap> {
 
     val images: MutableList<Bitmap> = mutableListOf()
 
+    if (!json.getBoolean("Success")) {
+        client.close()
+        return ResponseData(
+            success = false,
+            images = images
+        )
+    }
+
     for (i: Int in 1..5) {
         val imageAsString = json.getString("Image$i")
         var byteArray: ByteArray = Base64.decode(imageAsString, Base64.DEFAULT)
@@ -39,8 +48,10 @@ suspend fun requestImages(prompt: String, key: String): List<Bitmap> {
     }
 
     client.close()
-
-    return images
+    return ResponseData(
+        success = true,
+        images = images
+    )
 }
 
 suspend fun readJSONString(inputStream: InputStream): String {
