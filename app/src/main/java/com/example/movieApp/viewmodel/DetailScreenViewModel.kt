@@ -33,4 +33,8 @@ class DetailScreenViewModel(private val worldRepository: WorldRepository): ViewM
             it.id == id
         }
     }
+
+    suspend fun removeWorld(world: World) {
+        worldRepository.delete(world)
+    }
 }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -79,14 +80,22 @@ fun DetailScreen(navController: NavController, viewModel: DetailScreenViewModel,
                 mutableStateOf(false)
             }
 
-            IconButton(modifier = Modifier.align(Alignment.End),
-                onClick = {
-                expandInfo = !expandInfo
-            }) {
-                Icon(
-                    imageVector = if (expandInfo) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
-                    contentDescription = null
-                )
+            Row {
+                IconButton(
+                    onClick = {
+                        expandInfo = !expandInfo
+                    }) {
+                    Icon(
+                        imageVector = if (expandInfo) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
+                        contentDescription = null
+                    )
+                }
+                Button(onClick = {
+                    coroutineScope.launch { viewModel.removeWorld(world) }
+                    navController.popBackStack()
+                }) {
+                    Text("Discard")
+                }
             }
 
             AnimatedVisibility(visible = expandInfo) {
