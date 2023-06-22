@@ -9,7 +9,8 @@ import com.example.movieApp.models.World
 import kotlinx.coroutines.flow.Flow
 
 class WorldRepository(private val worldDao: WorldDao, private val storage: ExternalStorageIO) {
-    suspend fun fetchFromServer(prompt: String, key: String): ResponseData = requestGeneration(prompt, key)
+    suspend fun fetchFromServer(prompt: String, key: String, fromSeed: Boolean): ResponseData =
+        requestGeneration(prompt, key, fromSeed)
 
     suspend fun cacheImages(bmp: List<Bitmap>): List<String> = storage.cache(bmp)
 

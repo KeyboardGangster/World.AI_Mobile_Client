@@ -6,13 +6,16 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.movieApp.models.Tags
 import com.example.movieApp.navigation.Screen
 import com.example.movieApp.utils.InjectorUtils
 import com.example.movieApp.viewmodel.HomeScreenViewModel
 import com.example.movieApp.widgets.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 @Composable
@@ -40,9 +43,23 @@ fun HomeScreen(navController: NavController) {
                     Text(text = "Add new World!")
                 }*/
 
-                DisplayTags()
+                val selectedTags = remember { mutableStateListOf<Tags>() }
+
+                DisplayTags(selectedTags = selectedTags.toHashSet()) {
+                    if (selectedTags.contains(it))
+                        selectedTags.remove(it)
+                    else
+                        selectedTags.add(it)
+                }
+
                 WorldGallery(
-                    worlds = worlds.value,
+                    worlds =
+                    if (selectedTags.isEmpty())
+                        worlds.value
+                    else
+                        worlds.value.filter {world ->
+                            world.tags.any{selectedTags.contains(it)
+                        }},
                     onFavClick = {
                         coroutineScope.launch {
                             viewModel.toggleFave(it)

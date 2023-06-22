@@ -36,13 +36,13 @@ fun TextInput(modifier: Modifier, singleLine: Boolean, value: String, label: Str
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun SelectInput(
+fun <T> SelectInput(
     modifier: Modifier,
-    genreItems: List<ListItemSelectable>,
+    genreItems: List<ListItemSelectable<T>>,
     label: String,
     errorMsg: String,
-    predicate: (List<ListItemSelectable>) -> Boolean,
-    onValueChange: (ListItemSelectable) -> Unit
+    predicate: (List<ListItemSelectable<T>>) -> Boolean,
+    onValueChange: (ListItemSelectable<T>) -> Unit
 ): Boolean {
     val isValid = predicate.invoke(genreItems)
 
@@ -61,7 +61,7 @@ fun SelectInput(
                 backgroundColor = if (genreItem.isSelected) colorResource(id = R.color.purple_200)
                 else colorResource(id = R.color.white)
             ), onClick = { onValueChange.invoke(genreItem) }) {
-                Text(text = genreItem.title)
+                Text(text = genreItem.reference.toString())
             }
         }
     }

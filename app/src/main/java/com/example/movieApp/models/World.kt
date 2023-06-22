@@ -11,5 +11,9 @@ data class World(
     @PrimaryKey val id: String,
     val prompt: String,
     val images: List<String>,
+    val tags: List<Tags>,
+    val sourceServer: String,
+    val eSeed: String,
+    val timeOfDay: String,
     var isFavorite: Boolean = false) {
 }

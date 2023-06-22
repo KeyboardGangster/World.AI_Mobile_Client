@@ -12,7 +12,7 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.net.Socket
 
-suspend fun requestGeneration(prompt: String, key: String): ResponseData {
+suspend fun requestGeneration(prompt: String, key: String, fromSeed: Boolean): ResponseData {
     val client = Socket("10.0.2.2", 9999)
     val inputStream = client.getInputStream().buffered()
     val outputStream = client.getOutputStream().buffered()
@@ -21,6 +21,7 @@ suspend fun requestGeneration(prompt: String, key: String): ResponseData {
     val jsonReq = JSONObject()
     jsonReq.accumulate("Prompt", prompt)
     jsonReq.accumulate("Key", key)
+    jsonReq.accumulate("FromSeed", fromSeed)
 
     writeJSONString(outputStream, jsonReq.toString())
     Log.d("JsonP2P", "Sent request!!!!")
@@ -29,15 +30,14 @@ suspend fun requestGeneration(prompt: String, key: String): ResponseData {
     val json: JSONObject = JSONObject(response)
     Log.d("JsonP2P", "Converted to Json!!!!")
 
-    val images: MutableList<Bitmap> = mutableListOf()
-
     if (!json.getBoolean("Success")) {
         client.close()
         return ResponseData(
-            success = false,
-            images = images
+            success = false
         )
     }
+
+    val images: MutableList<Bitmap> = mutableListOf()
 
     for (i: Int in 1..5) {
         val imageAsString = json.getString("Image$i")
@@ -50,7 +50,10 @@ suspend fun requestGeneration(prompt: String, key: String): ResponseData {
     client.close()
     return ResponseData(
         success = true,
-        images = images
+        images = images,
+        serverName = json.getString("ServerName"),
+        eSeed = json.getString("eSeed"),
+        timeOfDay = json.getString("ToD")
     )
 }
 

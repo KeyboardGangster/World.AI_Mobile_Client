@@ -1,6 +1,6 @@
 package com.example.movieApp.models
 
-data class ListItemSelectable(
-    val title: String,
-    val isSelected: Boolean
+data class ListItemSelectable<T>(
+    val reference: T,
+    val isSelected: Boolean = false
 )

@@ -10,7 +10,7 @@ import com.example.movieApp.utils.CustomConverters
 
 @Database (
     entities = [World::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(CustomConverters::class)

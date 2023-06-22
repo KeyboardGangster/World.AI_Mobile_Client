@@ -1,7 +1,10 @@
 package com.example.movieApp.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,6 +27,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -73,7 +77,7 @@ fun AddScreen(navController: NavController, viewModel: AddScreenViewModel) {
                 var tagsItems by rememberSaveable {
                     mutableStateOf(tags.map { tag ->
                         ListItemSelectable(
-                            title = tag.toString(), isSelected = false
+                            reference = tag, isSelected = false
                         )
                     })
                 }
@@ -86,10 +90,9 @@ fun AddScreen(navController: NavController, viewModel: AddScreenViewModel) {
                     mutableStateOf(false)
                 }
 
-                val cachedFilePaths = AddScreenViewModel.currentChanges?.value
-                if (!cachedFilePaths.isNullOrEmpty())
-                    PreviewImage(height = 200, path = cachedFilePaths[0])
-
+                val responseData = AddScreenViewModel.currentChanges?.value
+                if (responseData != null && !responseData.imageFilePaths.isNullOrEmpty())
+                    PreviewImage(height = 200, path = responseData.imageFilePaths[0])
 
                 val validKey = TextInput(
                     modifier = Modifier,
@@ -106,24 +109,50 @@ fun AddScreen(navController: NavController, viewModel: AddScreenViewModel) {
                     fontWeight = FontWeight.Normal
                 )
 
-                val validPrompt = TextInput(
-                    modifier = Modifier.height(200.dp),
-                    singleLine = false,
-                    value = viewModel.prompt.value,
-                    label = "Enter prompt. Example: A rainy forest with huge trees...",
-                    errorMsg = "Prompt must not be empty!",
-                    predicate = { it.isNotEmpty() }) {
-                    viewModel.prompt.value = it
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                    Button(onClick = { viewModel.fromSeed.value = false }) {
+                        Text(text = "From prompt")
+                    }
+                    Button(onClick = { viewModel.fromSeed.value = true }) {
+                        Text(text = "From seed")
+                    }
                 }
+                
+                val validPrompt = if (viewModel.fromSeed.value) TextInput(
+                        modifier = Modifier,
+                        singleLine = true,
+                        value = viewModel.prompt.value,
+                        label = "Enter seed. Example: 1DJ1AYYBRMS",
+                        errorMsg = "Seed must not be empty!",
+                        predicate = { it.isNotEmpty() },
+                        onValueChange = { viewModel.prompt.value = it }
+                    )
+                else TextInput(
+                        modifier = Modifier.height(200.dp),
+                        singleLine = false,
+                        value = viewModel.prompt.value,
+                        label = "Enter prompt. Example: A rainy forest with huge trees...",
+                        errorMsg = "Prompt must not be empty!",
+                        predicate = { it.isNotEmpty() },
+                        onValueChange = { viewModel.prompt.value = it }
+                    )
 
                 if (AddScreenViewModel.generationFailed?.value == null ||
                     AddScreenViewModel.generationFailed?.value == true) {
-                    Text(text = "Generation Failed! Check your OpenAPI-key and prompt!")
+                    Text(
+                        text = "Generation Failed! Check your OpenAI API-key and prompt!",
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Red
+                    )
                 }
 
                 if (AddScreenViewModel.connectionFailed?.value == null ||
                     AddScreenViewModel.connectionFailed?.value == true) {
-                    Text(text = "Connection to server failed. Try again later!")
+                    Text(
+                        text = "Connection to server failed. Try again later!",
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Red
+                    )
                 }
 
                 Text(text = "Generate",
@@ -140,10 +169,10 @@ fun AddScreen(navController: NavController, viewModel: AddScreenViewModel) {
                     genreItems = tagsItems,
                     label = "Select tags",
                     errorMsg = "Select at least one tag!",
-                    predicate = { tagsItems.any { it.isSelected } }) { genreItem ->
+                    predicate = { tagsItems.any { it.isSelected } }) { item ->
                     tagsItems = tagsItems.map {
-                        if (it.title == genreItem.title) {
-                            genreItem.copy(isSelected = !genreItem.isSelected)
+                        if (it.reference == item.reference) {
+                            item.copy(isSelected = !item.isSelected)
                         } else {
                             it
                         }
@@ -153,15 +182,25 @@ fun AddScreen(navController: NavController, viewModel: AddScreenViewModel) {
                 isEnabledGenerateButton = validPrompt && validKey
                 isEnabledSaveButton = validPrompt && validKey && validTags &&
                         AddScreenViewModel.currentChanges != null &&
-                        AddScreenViewModel.currentChanges?.value?.isNotEmpty()?: false
+                        AddScreenViewModel.currentChanges?.value?.imageFilePaths?.isNotEmpty()?: false
 
-                Button(enabled = isEnabledSaveButton, onClick = {
-                    coroutineScope.launch {
-                        viewModel.saveWorld()
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                    Button(enabled = isEnabledSaveButton, onClick = {
+                        coroutineScope.launch {
+                            viewModel.saveWorld(tagsItems.filter { it.isSelected }.map { it.reference })
+                        }
+                    }) {
+                        Text(text = "Save")
                     }
-                }) {
-                    Text(text = "Save")
+                    Button(enabled = isEnabledSaveButton, onClick = {
+                        coroutineScope.launch {
+                            viewModel.discardWorld()
+                        }
+                    }) {
+                        Text(text = "Discard")
+                    }
                 }
+
             }
         }
     }

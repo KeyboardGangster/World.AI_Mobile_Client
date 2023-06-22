@@ -20,11 +20,12 @@ class FetchWorldWorker(private val context: Context, private val workerParameter
 
             val prompt = workerParameters.inputData.getString("Prompt")
             val key = workerParameters.inputData.getString("Key")
+            val fromSeed = workerParameters.inputData.getBoolean("FromSeed", false)
 
             if (prompt == null || key == null)
                 return Result.failure()
 
-            val responseData = worldRepository.fetchFromServer(prompt, key)
+            val responseData = worldRepository.fetchFromServer(prompt, key, fromSeed)
 
             if (!responseData.success) {
                 //failure
@@ -33,9 +34,10 @@ class FetchWorldWorker(private val context: Context, private val workerParameter
             }
 
             Log.d("Worker", "Got images!!!!")
-            val cachedFilesPaths = worldRepository.cacheImages(responseData.images)
+            val cachedFilePaths = worldRepository.cacheImages(responseData.images)
+            responseData.imageFilePaths = cachedFilePaths
             Log.d("Worker", "Cached images!!!!")
-            AddScreenViewModel.currentChanges?.value = cachedFilesPaths
+            AddScreenViewModel.currentChanges?.value = responseData
             Log.d("Worker", "Updated static property!!!!")
         }
         catch(exception: java.net.ConnectException) {
