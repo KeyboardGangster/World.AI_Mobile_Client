@@ -1,6 +1,7 @@
 package com.example.movieApp.screens
 
 import android.content.Intent
+import android.graphics.BitmapFactory
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -74,7 +75,7 @@ fun DetailScreen(navController: NavController, viewModel: DetailScreenViewModel,
                 onClick = {
                     // context.startActivity(viewModel.shareImage(world.images[0]))
                     // println(world.images[0])
-                    viewModel.shareImage(context, world.images[0])
+                    viewModel.shareImage(context, world.images)
                 }) {
                     Icon(Icons.Rounded.Share, "Share this world")
             }
@@ -115,9 +116,4 @@ fun DetailScreen(navController: NavController, viewModel: DetailScreenViewModel,
             }
         }
     }
-}
-
-@Composable
-fun Detail() {
-
 }

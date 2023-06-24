@@ -269,30 +269,3 @@ private fun testColumn(columnHeights: IntArray): Int {
     }
     return columnIndex
 }
-
-@Composable
-fun WorldList(worlds: List<World>, favForceUpdate: Boolean, onItemClick: (String) -> Unit, onFavClick: (String) -> Unit) {
-    LazyColumn {
-        items(worlds) { world ->
-            WorldEntry(
-                world = world,
-                favForceUpdate = favForceUpdate,
-                onItemClick = { onItemClick.invoke(world.id) },
-                onFavClick = { onFavClick.invoke(world.id) })
-        }
-    }
-}
-
-@Composable
-fun WorldEntry(world: World, favForceUpdate: Boolean, onItemClick: () -> Unit, onFavClick: () -> Unit) {
-    val bmp = BitmapFactory.decodeFile(world.images[0])
-    Column(
-        modifier = Modifier.clip(RoundedCornerShape(Dp(20f))),
-        verticalArrangement = Arrangement.Top,
-    ) {
-        Image(
-            painter= BitmapPainter(bmp.asImageBitmap()),
-            contentDescription = null
-        )
-    }
-}

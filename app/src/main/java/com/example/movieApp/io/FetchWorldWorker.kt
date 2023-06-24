@@ -47,15 +47,6 @@ class FetchWorldWorker(private val context: Context, private val workerParameter
             Log.d("Worker", exception.toString())
         }
 
-
-        /*val filePath = worldRepository.saveImagesToExternalStorage(bmp)
-        val world = World(
-            id = Random.nextInt().toString(),
-            prompt = prompt,
-            images = listOf(filePath)
-        )
-        worldRepository.add(world)*/
-
         return Result.success()
     }
 }

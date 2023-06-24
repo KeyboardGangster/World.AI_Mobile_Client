@@ -47,6 +47,24 @@ class ExternalStorageIO(private val context: Context) {
 
         return paths
     }
+/*
+    suspend fun saveExternal(bitmaps: List<Bitmap>): List<String> {
+        val filesDir: String = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!.absolutePath
+        val paths: MutableList<String> = mutableListOf()
+
+        for(bmp: Bitmap in bitmaps) {
+            val filepath = filesDir + "/image" + Random.nextInt(0, 999999) + ".png"
+            val file = File(filepath)
+            file.createNewFile()
+            val fOut = FileOutputStream(file)
+            bmp.compress(Bitmap.CompressFormat.PNG, 85, fOut)
+            fOut.flush()
+            fOut.close()
+            paths.add(filepath)
+        }
+
+        return paths
+    }*/
 
     suspend fun cache(bitmaps: List<Bitmap>): List<String> {
         val cacheDir: String = context.cacheDir.absolutePath

@@ -6,14 +6,18 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.core.content.ContextCompat.startActivity
+import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.movieApp.io.CustomFileProvider
+import com.example.movieApp.io.ExternalStorageIO
 import com.example.movieApp.io.repository.WorldRepository
 import com.example.movieApp.models.World
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.io.File
 
 class DetailScreenViewModel(private val worldRepository: WorldRepository): ViewModel() {
     private val _worldList = MutableStateFlow(listOf<World>())
@@ -44,15 +48,24 @@ class DetailScreenViewModel(private val worldRepository: WorldRepository): ViewM
         worldRepository.delete(world)
     }
 
-    public fun shareImage(localContext: Context, imagePath: String) {
+    fun shareImage(localContext: Context, imagePaths: List<String>) {
 
-        val imageUri = Uri.parse(imagePath)
-
-        val shareIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "image/jpeg"
-            putExtra(Intent.EXTRA_STREAM, imageUri)
+        val imageUris = imagePaths.map {
+            FileProvider.getUriForFile(
+                localContext,
+                "com.example.movieApp.fileProvider",
+                File(it)
+            )
         }
 
-        localContext.startActivity(Intent.createChooser(shareIntent, "share image"))
+        val uris: ArrayList<Uri> = ArrayList(imageUris)
+
+        val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
+        shareIntent.setType("image/jpg")
+        shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
+        shareIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+        localContext.startActivity(shareIntent)
+        //localContext.startActivity(Intent.createChooser(shareIntent, "share image")) SecurityException??
     }
 }
