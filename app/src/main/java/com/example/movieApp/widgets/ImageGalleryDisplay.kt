@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -24,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
@@ -33,6 +35,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import com.example.movieApp.R
 import com.example.movieApp.models.World
 
@@ -265,4 +268,31 @@ private fun testColumn(columnHeights: IntArray): Int {
         }
     }
     return columnIndex
+}
+
+@Composable
+fun WorldList(worlds: List<World>, favForceUpdate: Boolean, onItemClick: (String) -> Unit, onFavClick: (String) -> Unit) {
+    LazyColumn {
+        items(worlds) { world ->
+            WorldEntry(
+                world = world,
+                favForceUpdate = favForceUpdate,
+                onItemClick = { onItemClick.invoke(world.id) },
+                onFavClick = { onFavClick.invoke(world.id) })
+        }
+    }
+}
+
+@Composable
+fun WorldEntry(world: World, favForceUpdate: Boolean, onItemClick: () -> Unit, onFavClick: () -> Unit) {
+    val bmp = BitmapFactory.decodeFile(world.images[0])
+    Column(
+        modifier = Modifier.clip(RoundedCornerShape(Dp(20f))),
+        verticalArrangement = Arrangement.Top,
+    ) {
+        Image(
+            painter= BitmapPainter(bmp.asImageBitmap()),
+            contentDescription = null
+        )
+    }
 }

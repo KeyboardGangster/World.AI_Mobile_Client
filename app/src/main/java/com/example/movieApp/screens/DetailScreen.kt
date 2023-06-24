@@ -1,7 +1,7 @@
 package com.example.movieApp.screens
 
+import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +25,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -41,6 +42,8 @@ import kotlinx.coroutines.launch
 fun DetailScreen(navController: NavController, viewModel: DetailScreenViewModel, id: String) {
     val world = viewModel.getWorldFromId(id)
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
+
 
     ScaffoldBottomBar(navController = navController) {
 
@@ -67,7 +70,12 @@ fun DetailScreen(navController: NavController, viewModel: DetailScreenViewModel,
                 modifier = Modifier.padding(5.dp),
                 textAlign = TextAlign.Center
             )
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton (
+                onClick = {
+                    // context.startActivity(viewModel.shareImage(world.images[0]))
+                    // println(world.images[0])
+                    viewModel.shareImage(context, world.images[0])
+                }) {
                     Icon(Icons.Rounded.Share, "Share this world")
             }
             DisplayTags(world.tags)

@@ -36,7 +36,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.movieApp.models.ListItemSelectable
 import com.example.movieApp.models.Tags
-import com.example.movieApp.utils.InjectorUtils
 import com.example.movieApp.viewmodel.AddScreenViewModel
 import com.example.movieApp.widgets.PreviewImage
 import com.example.movieApp.widgets.ScaffoldBottomBar
@@ -184,7 +183,7 @@ fun AddScreen(navController: NavController, viewModel: AddScreenViewModel) {
                         AddScreenViewModel.currentChanges != null &&
                         AddScreenViewModel.currentChanges?.value?.imageFilePaths?.isNotEmpty()?: false
 
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                Row(Modifier.fillMaxWidth().padding(0.dp,0.dp,0.dp, 50.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
                     Button(enabled = isEnabledSaveButton, onClick = {
                         coroutineScope.launch {
                             viewModel.saveWorld(tagsItems.filter { it.isSelected }.map { it.reference })

@@ -1,6 +1,7 @@
 package com.example.movieApp.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -15,6 +16,7 @@ import com.example.movieApp.viewmodel.DetailScreenViewModel
 
 @Composable
 fun MainNavigation() {
+
     //This is here so the viewModel can cache all the movies before opening detail-screen
     val detailScreenViewModel: DetailScreenViewModel = viewModel(
         factory = InjectorUtils.provideDetailScreenViewModelFactory(LocalContext.current))

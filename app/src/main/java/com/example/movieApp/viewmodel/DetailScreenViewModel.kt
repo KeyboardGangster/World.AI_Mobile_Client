@@ -1,5 +1,11 @@
 package com.example.movieApp.viewmodel
 
+import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.movieApp.io.repository.WorldRepository
@@ -36,5 +42,17 @@ class DetailScreenViewModel(private val worldRepository: WorldRepository): ViewM
 
     suspend fun removeWorld(world: World) {
         worldRepository.delete(world)
+    }
+
+    public fun shareImage(localContext: Context, imagePath: String) {
+
+        val imageUri = Uri.parse(imagePath)
+
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "image/jpeg"
+            putExtra(Intent.EXTRA_STREAM, imageUri)
+        }
+
+        localContext.startActivity(Intent.createChooser(shareIntent, "share image"))
     }
 }
