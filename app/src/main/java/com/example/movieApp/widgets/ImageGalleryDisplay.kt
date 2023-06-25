@@ -2,18 +2,21 @@ package com.example.movieApp.widgets
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
@@ -22,22 +25,23 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.unit.dp
-import kotlin.random.Random
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.example.movieApp.R
 import com.example.movieApp.models.World
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.random.Random
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun WorldGallery(worlds: List<World>, onFavClick: (String) -> Unit, onClick: (String) -> Unit) {
@@ -110,53 +114,85 @@ fun WorldSingleImage(height: Int, world: World, onFavClick: (String) -> Unit, on
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WorldAllImages(height: Int, world: World, onFavClick: (String) -> Unit, onClick: (String) -> Unit) {
     var isFaveState by remember {
         mutableStateOf(world.isFavorite)
     }
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp)
-            .height(height.dp),
-        elevation = 10.dp,
-        shape = RoundedCornerShape(10.dp)
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize()
+    val pagerState = rememberPagerState()
+
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        while(true) {
+            delay(3.seconds)
+            pagerState.animateScrollToPage((pagerState.currentPage + 1) % world.images.size)
+        }
+    }
+
+    Column {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp)
+                .height(height.dp),
+            elevation = 10.dp,
+            shape = RoundedCornerShape(10.dp)
         ) {
-            LazyRow {
-                items(world.images) {
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    pageCount = world.images.size
+                ) { page ->
                     DisplaySavedImage(
-                        modifier = Modifier
-                            .width(LocalConfiguration.current.screenWidthDp.dp)
-                            .fillMaxSize()
-                            .clickable { onClick(world.id) },
-                        path = it,
+                        modifier = Modifier.fillMaxSize(),
+                        path = world.images[page],
                         alignment = Alignment.Center,
                         contentScale = ContentScale.FillWidth
                     )
                 }
-            }
 
-            Box(
-                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd
-            ) {
-                IconButton(onClick = {
-                    onFavClick(world.id)
-                    isFaveState = !isFaveState
-                }) {
-                    Icon(
-                        tint = Color.White,
-                        imageVector = if (isFaveState) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
-                        contentDescription = "Bookmarked"
-                    )
+                Box(
+                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd
+                ) {
+                    IconButton(onClick = {
+                        onFavClick(world.id)
+                        isFaveState = !isFaveState
+                    }) {
+                        Icon(
+                            tint = Color.White,
+                            imageVector = if (isFaveState) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
+                            contentDescription = "Bookmarked"
+                        )
+                    }
                 }
             }
         }
+
+        TabRow(
+            selectedTabIndex = pagerState.currentPage,
+            modifier = Modifier
+                .padding(10.dp)
+                .height(20.dp),
+            contentColor = MaterialTheme.colors.onPrimary,
+        ) {
+            world.images.forEachIndexed { index, _ ->
+                Tab(
+                    selected = pagerState.currentPage == index,
+                    onClick = { coroutineScope.launch { pagerState.scrollToPage(index) } }
+                )
+            }
+        }
     }
+
 }
 
 @Composable

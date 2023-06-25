@@ -15,7 +15,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.rememberScaffoldState
@@ -190,12 +189,6 @@ fun AddScreen(navController: NavController, viewModel: AddScreenViewModel) {
                     }
 
                 if (isVisible) {
-
-                    var worldName by rememberSaveable { mutableStateOf("")}
-
-                    val validWorldName = TextField (value = worldName,
-                        onValueChange = {worldName = it},
-                        label = {Text("Pick a world name")})
 
                     val validTags = SelectInput(modifier = Modifier.fillMaxWidth(),
                         genreItems = tagsItems,

@@ -24,9 +24,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.movieApp.viewmodel.DetailScreenViewModel
 import com.example.movieApp.widgets.DisplayTags
@@ -45,7 +43,7 @@ fun DetailScreen(navController: NavController, viewModel: DetailScreenViewModel,
 
         Column (modifier = Modifier.padding(10.dp)) {
 
-            IconButton(onClick = {
+            IconButton( onClick = {
             navController.navigateUp()
         }) {
             Icon(Icons.Rounded.ArrowBack, "")
@@ -60,12 +58,7 @@ fun DetailScreen(navController: NavController, viewModel: DetailScreenViewModel,
 
                 }
             )
-            Text(
-                text = "World Name",
-                fontSize = 30.sp,
-                modifier = Modifier.padding(5.dp),
-                textAlign = TextAlign.Center
-            )
+
             IconButton (
                 onClick = {
                     // context.startActivity(viewModel.shareImage(world.images[0]))
