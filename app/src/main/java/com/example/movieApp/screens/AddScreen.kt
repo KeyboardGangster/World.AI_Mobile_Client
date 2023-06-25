@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,6 +15,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.rememberScaffoldState
@@ -28,11 +28,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.movieApp.models.ListItemSelectable
 import com.example.movieApp.models.Tags
@@ -89,9 +87,15 @@ fun AddScreen(navController: NavController, viewModel: AddScreenViewModel) {
                     mutableStateOf(false)
                 }
 
+                var isVisible by rememberSaveable {
+                    mutableStateOf(false)
+                }
+
+                var isLoading by rememberSaveable {
+                    mutableStateOf(false)
+                }
+
                 val responseData = AddScreenViewModel.currentChanges?.value
-                if (responseData != null && !responseData.imageFilePaths.isNullOrEmpty())
-                    PreviewImage(height = 200, path = responseData.imageFilePaths[0])
 
                 val validKey = TextInput(
                     modifier = Modifier,
@@ -103,7 +107,8 @@ fun AddScreen(navController: NavController, viewModel: AddScreenViewModel) {
                     viewModel.key.value = it
                 }
 
-                Text(text = "Create a world with a description:",
+                Text(
+                    text = "Create a world with a description:",
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Normal
                 )
@@ -116,28 +121,29 @@ fun AddScreen(navController: NavController, viewModel: AddScreenViewModel) {
                         Text(text = "From seed")
                     }
                 }
-                
+
                 val validPrompt = if (viewModel.fromSeed.value) TextInput(
-                        modifier = Modifier,
-                        singleLine = true,
-                        value = viewModel.prompt.value,
-                        label = "Enter seed. Example: 1DJ1AYYBRMS",
-                        errorMsg = "Seed must not be empty!",
-                        predicate = { it.isNotEmpty() },
-                        onValueChange = { viewModel.prompt.value = it }
-                    )
+                    modifier = Modifier,
+                    singleLine = true,
+                    value = viewModel.prompt.value,
+                    label = "Enter seed. Example: 1DJ1AYYBRMS",
+                    errorMsg = "Seed must not be empty!",
+                    predicate = { it.isNotEmpty() },
+                    onValueChange = { viewModel.prompt.value = it }
+                )
                 else TextInput(
-                        modifier = Modifier.height(200.dp),
-                        singleLine = false,
-                        value = viewModel.prompt.value,
-                        label = "Enter prompt. Example: A rainy forest with huge trees...",
-                        errorMsg = "Prompt must not be empty!",
-                        predicate = { it.isNotEmpty() },
-                        onValueChange = { viewModel.prompt.value = it }
-                    )
+                    modifier = Modifier.height(200.dp),
+                    singleLine = false,
+                    value = viewModel.prompt.value,
+                    label = "Enter prompt. Example: A rainy forest with huge trees...",
+                    errorMsg = "Prompt must not be empty!",
+                    predicate = { it.isNotEmpty() },
+                    onValueChange = { viewModel.prompt.value = it }
+                )
 
                 if (AddScreenViewModel.generationFailed?.value == null ||
-                    AddScreenViewModel.generationFailed?.value == true) {
+                    AddScreenViewModel.generationFailed?.value == true
+                ) {
                     Text(
                         text = "Generation Failed! Check your OpenAI API-key and prompt!",
                         fontWeight = FontWeight.Bold,
@@ -146,7 +152,8 @@ fun AddScreen(navController: NavController, viewModel: AddScreenViewModel) {
                 }
 
                 if (AddScreenViewModel.connectionFailed?.value == null ||
-                    AddScreenViewModel.connectionFailed?.value == true) {
+                    AddScreenViewModel.connectionFailed?.value == true
+                ) {
                     Text(
                         text = "Connection to server failed. Try again later!",
                         fontWeight = FontWeight.Bold,
@@ -154,52 +161,83 @@ fun AddScreen(navController: NavController, viewModel: AddScreenViewModel) {
                     )
                 }
 
-                Text(text = "Generate",
+                Text(
+                    text = "Generate",
                     style = MaterialTheme.typography.h6
-                    )
-                IconButton( enabled = isEnabledGenerateButton,
+                )
+                IconButton(enabled = isEnabledGenerateButton,
                     onClick = {
                         viewModel.enqueueFetchRequest()
+                        isLoading = true
                     }) {
                     Icon(Icons.Rounded.Bolt, "")
                 }
-
-                val validTags = SelectInput(modifier = Modifier.fillMaxWidth(),
-                    genreItems = tagsItems,
-                    label = "Select tags",
-                    errorMsg = "Select at least one tag!",
-                    predicate = { tagsItems.any { it.isSelected } }) { item ->
-                    tagsItems = tagsItems.map {
-                        if (it.reference == item.reference) {
-                            item.copy(isSelected = !item.isSelected)
-                        } else {
-                            it
-                        }
-                    }
-                }
-
                 isEnabledGenerateButton = validPrompt && validKey
-                isEnabledSaveButton = validPrompt && validKey && validTags &&
-                        AddScreenViewModel.currentChanges != null &&
-                        AddScreenViewModel.currentChanges?.value?.imageFilePaths?.isNotEmpty()?: false
 
-                Row(Modifier.fillMaxWidth().padding(0.dp,0.dp,0.dp, 50.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
-                    Button(enabled = isEnabledSaveButton, onClick = {
-                        coroutineScope.launch {
-                            viewModel.saveWorld(tagsItems.filter { it.isSelected }.map { it.reference })
-                        }
-                    }) {
-                        Text(text = "Save")
-                    }
-                    Button(enabled = isEnabledSaveButton, onClick = {
-                        coroutineScope.launch {
-                            viewModel.discardWorld()
-                        }
-                    }) {
-                        Text(text = "Discard")
-                    }
+
+
+                if (responseData != null && !responseData.imageFilePaths.isNullOrEmpty()) {
+                    PreviewImage(height = 200, path = responseData.imageFilePaths[0])
+                    isVisible = true
+                    isLoading = false
                 }
 
+                var loading =
+                    if (isLoading) {
+                        Text(text = "The World is being generated and pictures are being taken, please wait!")
+                    } else {
+                        Text(text = "")
+                    }
+
+                if (isVisible) {
+
+                    var worldName by rememberSaveable { mutableStateOf("")}
+
+                    val validWorldName = TextField (value = worldName,
+                        onValueChange = {worldName = it},
+                        label = {Text("Pick a world name")})
+
+                    val validTags = SelectInput(modifier = Modifier.fillMaxWidth(),
+                        genreItems = tagsItems,
+                        label = "Select tags",
+                        errorMsg = "Select at least one tag!",
+                        predicate = { tagsItems.any { it.isSelected } }) { item ->
+                        tagsItems = tagsItems.map {
+                            if (it.reference == item.reference) {
+                                item.copy(isSelected = !item.isSelected)
+                            } else {
+                                it
+                            }
+                        }
+                    }
+
+                    isEnabledSaveButton = validPrompt && validKey && validTags &&
+                            AddScreenViewModel.currentChanges != null &&
+                            AddScreenViewModel.currentChanges?.value?.imageFilePaths?.isNotEmpty() ?: false
+
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(0.dp, 0.dp, 0.dp, 100.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Button(enabled = isEnabledSaveButton, onClick = {
+                            coroutineScope.launch {
+                                viewModel.saveWorld(tagsItems.filter { it.isSelected }
+                                    .map { it.reference })
+                            }
+                        }) {
+                            Text(text = "Save")
+                        }
+                        Button(enabled = isEnabledSaveButton, onClick = {
+                            coroutineScope.launch {
+                                viewModel.discardWorld()
+                            }
+                        }) {
+                            Text(text = "Discard")
+                        }
+                    }
+                }
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.example.movieApp.widgets
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
@@ -55,11 +56,18 @@ fun <T> SelectInput(
 
     if (!isValid) Text(errorMsg, color = Color.Red)
 
+    val isDarkMode = isSystemInDarkTheme()
+    var color = if (isDarkMode) {
+        R.color.black
+    } else {
+        R.color.white
+    }
+
     LazyRow {
         items(genreItems) { genreItem ->
             Chip(modifier = Modifier.padding(2.dp), colors = ChipDefaults.chipColors(
                 backgroundColor = if (genreItem.isSelected) colorResource(id = R.color.purple_200)
-                else colorResource(id = R.color.white)
+                else colorResource(id = color)
             ), onClick = { onValueChange.invoke(genreItem) }) {
                 Text(text = genreItem.reference.toString())
             }
